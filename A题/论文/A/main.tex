@@ -462,7 +462,7 @@ G_{i+1/2}=-S_{i+1/2}\frac{\Psi(C_{i+1})-\Psi(C_i)}{r_{i+1}-r_i}.
 
   \begin{figure}[H]
       \centering
-      \includegraphics[width=0.65\textwidth]{figure3.pdf}
+      \includegraphics[width=0.80\textwidth]{figure3.pdf}
       \caption{预热阶段温湿时空分布}
       \label{fig:q1field}
   \end{figure}
@@ -860,7 +860,7 @@ P(t)=\frac{C_0-M(t)}{C_0-C_{\mathrm{crit}}}.
 % 的未舍入原始场后处理得到；该进度并非整根药材排出水分的质量比例。
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.65\textwidth]{figure8.pdf}
+\includegraphics[width=0.80\textwidth]{figure8.pdf}
 \caption{各位置的达标次序与最湿位置的达阈进度}
 \label{fig:q3-completion}
 \end{figure}
@@ -981,516 +981,336 @@ S_p^{(Y)}\approx\frac{Y(1.1p)-Y(0.9p)}{0.2Y(p)},
 % 传质参数数据：问题三/长期传质灵敏度/runs/summary.csv。
 \begin{figure}[H]
 \centering
-\qoneplaceholder{5.8cm}{左：S0、S30、S90 相对 S60 的总时长变化（min），以零线为基准\\[0.8em]
-右：按温度、环境含水率、\(h_m\)、\(D\) 整体倍率分组展示正、负扰动\\[0.5em]
-横轴用时间变化（h），实心、空心点分别表示 \(\Delta t_*\)、\(\Delta t_{\mathrm{late}}\)\\[0.5em]
-标明扰动幅度：\(\pm1~^\circ\mathrm C\)、\(\pm0.005~\mathrm{kg/kg}\)、\(\pm10\%\)、\(\pm10\%\)\\[0.5em]
-同一情景的两个点相连；连接线表示两个时间指标的比较，不表示置信区间}
+\includegraphics[width=0.80\textwidth]{figure9.pdf}
 \caption{环境与传质参数变化对总时长和末期耗时的影响}
 \label{fig:q3-scenarios}
 \end{figure}
 
 补充实验的未扰动组复现了正式基准结果。五组计算中，含水率体积积分的最大相对平衡残差为 \(1.67\times10^{-10}\)，进入末期与全域达标的两处事件均通过前后检查。各扰动组沿用640格配置，本次未另作空间离散或网格加密复核。
 
-\section{问题四的建立与求解}
+\subsection{问题四模型的建立与求解}
+\label{sec:q4}
 
-\subsection{问题四的前提与建模范围}
+\subsubsection{模型的建立}
+\label{sec:q4-model}
 
-问题四在问题三的基础上再增加一个变化：药材在烘干过程中半径随时间减小，表面位置不再是固定的 \(R=0.02~\mathrm{m}\)，计算区域本身在缩短。同时，物性从问题三的附录 3 换成题目附录 4 给出的另一套经验公式。因此，问题四不能沿用问题三的结果，必须从初始时刻重新计算。
+第四问中，药材半径不断减小，内部材料层与表面的位置也随之改变。我们先用附件2确定半径变化，再跟踪各材料层的温度与含水率，采用附录4物性，从题设初态重新计算。
 
-表~\ref{tab:q3q4} 给出问题三与问题四的核心区别。
+\noindent\textbf{（1）半径变化与材料坐标。}
+附件2给出了前 \(72~\mathrm h\) 每隔 \(1800~\mathrm s\) 的半径，共 \(145\) 个观测值。将半径统一换算为米，采用保形分段三次插值（PCHIP）得到 \(R(t)\)，使相邻观测之间的半径保持非增。初始半径为 \(R_0=0.02~\mathrm m\)。半径记录作为本问的几何输入，温湿场计算中不再另行拟合收缩方程。
 
-\begin{table}[H]
-\centering
-\caption{问题三与问题四的核心区别}
-\label{tab:q3q4}
-\begin{tabularx}{\textwidth}{|>{\centering\arraybackslash}p{3cm}|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|}
-\hline
-\rowcolor{headcolor}
-\textbf{比较项} & \textbf{问题三} & \textbf{问题四} \\
-\hline
-\rowcolor{rowcolor1}
-半径 & 固定 \(R=0.02~\mathrm{m}\) & 由附件 2 实测半径给定，随时间减小 \\
-\hline
-\rowcolor{rowcolor2}
-物性 & 附录 3 & 附录 4 \\
-\hline
-\rowcolor{rowcolor1}
-计算区域 & 固定 & 移动边界，随半径缩短 \\
-\hline
-\rowcolor{rowcolor2}
-输出位置 & 固定径向距离 & 固定物理位置，域外留空；另列表面位置 \\
-\hline
-\rowcolor{rowcolor1}
-核心任务 & 全域首次达标时间 & 移动区域内的首次达标时间 \\
-\hline
-\end{tabularx}
-\end{table}
-
-问题四可复用问题三的环形有限体积、非线性水分通量、隐式时间推进和事件框架，但几何、四个物性函数、动态校验和输出位置都需要更新。问题四从初始时刻重新计算，不能接着问题三的末态继续。
-
-\subsubsection{必须写进论文的假设}
-
-\begin{enumerate}
-\item 药材视为轴对称长圆柱，初始长度 \(0.25~\mathrm{m}\)、半径 \(0.02~\mathrm{m}\)。只计算径向传递，忽略轴向梯度和端面交换；长度保持不变。附件 2 只给半径，不能据此推断长度也同比缩短。
-\item 横截面均匀同比径向收缩，同一相对半径对应同一材料层。这个假设使网格可以跟随材料运动，但它不是附件 2 直接测出的内部变形规律。
-\item 半径由观测数据预先给定，温湿场随之演化。这是单向耦合：半径影响传递，模型不另外根据含水率预测半径。
-\item 沿用前问的有效热湿方程和表面对流闭合。未显式描述潜热、变形功、孔隙气流及完整组分焓输运；这些简化限制物理解释的范围。
-\item 附录 4 密度用于题给热物性，不额外作为干物质密度或收缩定律。
-\end{enumerate}
-
-\subsection{模型建立}
-
-\subsubsection{输入数据与单位统一}
-
-输入数据和单位统一列入表~\ref{tab:q4input}。
-
-\begin{table}[H]
-\centering
-\caption{问题四输入数据与单位}
-\label{tab:q4input}
-\begin{tabularx}{\textwidth}{|>{\centering\arraybackslash}p{3.2cm}|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|}
-\hline
-\rowcolor{headcolor}
-\textbf{输入} & \textbf{取值或处理} & \textbf{来源及性质} \\
-\hline
-\rowcolor{rowcolor1}
-初始状态 & \(T(\xi,0)=28~^\circ\mathrm{C}\)，\(C(\xi,0)=2.55~\mathrm{kg/kg}\) & 题面 \\
-\hline
-\rowcolor{rowcolor2}
-初始几何 & \(R_0=0.02~\mathrm{m}\)，\(L=0.25~\mathrm{m}\) & 题面；长度固定是简化 \\
-\hline
-\rowcolor{rowcolor1}
-交换系数 & \(h=25~\mathrm{W/(m^2\cdot K)}\)，\(h_m=8\times10^{-7}~\mathrm{m/s}\) & 附录 2，后续问沿用的闭合选择 \\
-\hline
-\rowcolor{rowcolor2}
-环境记录 & 附件 1，\(0\sim14400~\mathrm{s}\) & 区间内分段线性插值 \\
-\hline
-\rowcolor{rowcolor1}
-半径记录 & 附件 2 & 区间内保持单调的 PCHIP 插值 \\
-\hline
-\end{tabularx}
-\end{table}
-
-内部一律使用秒、米、摄氏温度状态和干基含水率；扩散系数函数内部先转成开尔文。图表可显示小时和厘米，但必须在接口处明确换算。
-
-\subsubsection{半径输入与插值}
-
-将附件 2 的厘米转换成米，先检查时间严格递增、半径有限且为正、记录单调不增，再使用保持单调的 PCHIP 插值。它通过所有观测点且一阶导连续，二阶导不必连续，不要笼统称为“完全光滑”。\(72~\mathrm{h}\) 之后关闭插值器默认外推，显式处理：
+半径只能确定表面的位置，内部材料层怎样移动还需作出假设。按径向同比例收缩的假设，取
 \begin{equation}
-R(t)=R_{\mathrm{PCHIP}}(t)\quad(0\le t\le 259200~\mathrm{s}),
+\xi=\frac{r}{R(t)},\qquad r(\xi,t)=R(t)\xi,\qquad
+v(r,t)=\frac{\dot R(t)}{R(t)}r.
+\label{eq:q4-material-coordinate}
 \end{equation}
-\begin{equation}
-R(t)=0.01198~\mathrm{m}\quad(t>259200~\mathrm{s}).
-\end{equation}
-对照方案用相同数据的分段线性插值。需要验证全部 145 个原始节点重现、区间内正性和单调性、平台连接连续。
+其中 \(\xi\in[0,1]\) 是材料层的相对位置，\(v\) 为径向移动速度。固定 \(\xi\) 即跟踪同一材料层；固定实际距离 \(r\) 则会在不同时刻对应不同材料层，二者的区别见图~\ref{fig:q4-geometry}。本问仍考察轴向中截面，计算中取 \(L=0.25~\mathrm m\)。
 
-图~\ref{fig:q4radius} 给出附件 2 半径观测和两种插值，局部图放大早期快速变化和末段。
-
+% 由作者绘制。半径数据：附件2；末行几何取本问临界时刻，不能用72 h代替。
 \begin{figure}[H]
 \centering
-% \includegraphics[width=0.95\textwidth]{fig_q4_radius.png}
-\caption{附件 2 半径观测与两种插值。左：全程；右：早期与末段局部放大。线条只连接观测区间，未绘制未经验证的未来半径。}
-\label{fig:q4radius}
+\qoneplaceholder{4.7cm}{左：附件2半径观测点与 PCHIP 曲线，标出 \(6~\mathrm h\) 及临界时刻\\[0.6em]
+右：\(0\)、\(6\)、\(t_*\) 三个时刻的径向材料层位置\\[0.5em]
+同色标记对应相同 \(\xi\)，竖虚线标出固定距离 \(r=0.5~\mathrm{cm}\)\\[0.5em]
+三个半径分别为 \(2.000\)、\(1.374\)、\(1.200~\mathrm{cm}\)}
+\caption{实测半径变化及收缩过程中材料层的位置}
+\label{fig:q4-geometry}
 \end{figure}
 
-读图结论限于输入：半径由 \(2.000~\mathrm{cm}\) 减至 \(1.198~\mathrm{cm}\)，\(6~\mathrm{h}\) 为 \(1.374~\mathrm{cm}\)，\(12~\mathrm{h}\) 为 \(1.248~\mathrm{cm}\)，\(24~\mathrm{h}\) 为 \(1.204~\mathrm{cm}\)。67 至 \(72~\mathrm{h}\) 的记录相同，只能支持采用平台延拓作为基线，不能证明此后半径精确不变。
+对于温度或含水率 \(u\)，令 \(u_m(\xi,t)=u(R(t)\xi,t)\)。由链式法则可得
+\begin{equation}
+\left.\frac{\partial u_m}{\partial t}\right|_\xi
+=\left.\frac{\partial u}{\partial t}\right|_r
+ +v\frac{\partial u}{\partial r},
+\qquad
+\frac{\partial u}{\partial r}=\frac{1}{R(t)}\frac{\partial u_m}{\partial\xi}.
+\label{eq:q4-material-derivative}
+\end{equation}
+因此，材料层自身的状态变化，应同时计入固定位置上的变化及材料移动带来的变化。以下将材料坐标下的状态仍记为 \(T(\xi,t)\)、\(C(\xi,t)\)。
 
-\subsubsection{附录 4 物性}
+\noindent\textbf{（2）变物性传递方程。}
+附录4给出的四个物性函数为
+\begin{equation}
+\begin{aligned}
+\rho(C)&=760+90C, &
+c_p(C)&=1850+\frac{2150C}{1+C},\\
+k(C)&=0.12+\frac{0.20C}{1+C}, &
+D(C,T_K)&=4.2\times10^{-4}
+ \exp\!\left(-\frac{0.30}{C}-\frac{3850}{T_K}\right),
+\end{aligned}
+\label{eq:q4-properties}
+\end{equation}
+各物性采用国际单位制，\(T_K=T+273.15\)，并记 \(B(C)=\rho(C)c_p(C)\)。含水率改变热容和导热系数，温度又影响水分扩散，故仍需联合求解温度与含水率。
 
-四个经验式必须一起切换到附录 4。下面的 \(C\) 为 \(\mathrm{kg/kg}\)，\(T_K\) 为 K；计算时用当前节点状态更新物性：
-\begin{align}
-\rho(C) &= 760+90C,\\
-c_p(C) &= 1850+2150\frac{C}{C+1},\\
-k(C) &= 0.12+0.20\frac{C}{C+1},\\
-D(C,T_K) &= 4.2\times10^{-4}\exp\!\left(-\frac{0.30}{C}\right)\exp\!\left(-\frac{3850}{T_K}\right),\\
-B(C) &= \rho(C)c_p(C).
-\end{align}
-\(\rho\) 的单位为 \(\mathrm{kg/m^3}\)，\(c_p\) 为 \(\mathrm{J/(kg\cdot K)}\)，\(k\) 为 \(\mathrm{W/(m\cdot K)}\)，\(D\) 为 \(\mathrm{m^2/s}\)，\(B\) 为 \(\mathrm{J/(m^3\cdot K)}\)。通俗地说，\(B\) 决定升温需要多少热，\(k\) 决定热向内传得多快，\(D\) 决定水分在内部迁移得多快。
+沿用前文的有效传递关系，将局部积累量解释为随材料层运动的状态变化。物理坐标下，热量与水分方程左端分别为 \(B(C)(T_t+vT_r)\) 与 \(C_t+vC_r\)，右端仍为径向通量的散度。代入式~\eqref{eq:q4-material-derivative}，便将变化区域 \([0,R(t)]\) 上的问题转化为固定区间 \(0<\xi<1\) 上的方程：
+\begin{equation}
+\left\{
+\begin{aligned}
+B(C)\frac{\partial T}{\partial t}
+ &=\frac{1}{R(t)^2\xi}\frac{\partial}{\partial\xi}
+   \left[\xi k(C)\frac{\partial T}{\partial\xi}\right],\\
+\frac{\partial C}{\partial t}
+ &=\frac{1}{R(t)^2\xi}\frac{\partial}{\partial\xi}
+   \left[\xi D(C,T_K)\frac{\partial C}{\partial\xi}\right].
+\end{aligned}
+\right.
+\label{eq:q4-pde}
+\end{equation}
+这里的时间导数均在固定 \(\xi\) 下计算。\(C\) 表示材料的干基含水率，体积变小本身不作为失水量；热量方程也继续采用 \(B(C)T_t\) 表示温度变化对应的有效积累项。
 
-在相同温度和含水率下，附录 4 与附录 3 的扩散系数之比为
+初始时刻各材料层状态相同，轴心无径向通量，侧表面满足对流换热与传质条件。换到材料坐标后，初始条件和边界条件为
+\begin{equation}
+\left\{
+\begin{aligned}
+T(\xi,0)&=28~^\circ\mathrm C, \\ C(\xi,0)&=2.55~\mathrm{kg/kg},\\
+T_\xi(0,t)&=0, \\ C_\xi(0,t)&=0,\\
+-\frac{k(C_s)}{R(t)}T_\xi(1,t)&=h[T_s-T_\infty(t)],\\
+-\frac{D(C_s,T_{K,s})}{R(t)}C_\xi(1,t)&=h_m[C_s-C_e(t)].
+\end{aligned}
+\right.
+\label{eq:q4-conditions}
+\end{equation}
+其中 \(T_s=T(1,t)\)、\(C_s=C(1,t)\)，\(h\)、\(h_m\) 与前文相同。前 \(4~\mathrm h\) 使用附件1的环境插值，此后沿用第三问的 S60 平台，即 \(T_\infty=49.9959~^\circ\mathrm C\)、\(C_e=0.0499904~\mathrm{kg/kg}\)。至此，实测半径、物性及初边值条件共同确定了本问的计算模型。
+
+\subsubsection{模型的求解}
+\label{sec:q4-solution}
+
+我们继续采用环层有限体积与自适应 BDF 方法，新的处理集中在随时间更新几何，以及将材料层上的结果换回题目要求的实际位置。
+
+\noindent\textbf{（1）在材料坐标上离散并更新几何。}
+将 \([0,1]\) 均匀划分为 \(N\) 个区间，节点为 \(\xi_i=i/N\)。内部界面取相邻节点的中点，中心、表面界面分别为 \(0\)、\(1\)。每次计算状态变化率时，先由当前 \(R(t)\) 求出
+\begin{equation}
+\begin{aligned}
+r_i(t)&=R(t)\xi_i,\qquad
+S_{i+1/2}(t)=2\pi LR(t)\xi_{i+1/2},\\
+V_i(t)&=\pi LR(t)^2
+ \left(\xi_{i+1/2}^2-\xi_{i-1/2}^2\right).
+\end{aligned}
+\label{eq:q4-discrete-geometry}
+\end{equation}
+然后更新各节点的四个物性，以相邻节点导热系数的调和平均计算热流，以界面平均温度和五点 Gauss 积分计算非线性水分势差。通量的构造沿用第二问，环层收支写为
+\begin{equation}
+B(C_i)V_i(t)\dot T_i=F_{i-1/2}-F_{i+1/2},\qquad
+V_i(t)\dot C_i=G_{i-1/2}-G_{i+1/2}.
+\label{eq:q4-fvm}
+\end{equation}
+中心仍取零通量，表面通量用当前侧面积乘以换热、传质通量密度。内部界面面积与节点间距都含有 \(R(t)\)，二者相除后半径因子抵消；再除以环层体积，便得到式~\eqref{eq:q4-pde} 中的 \(R(t)^{-2}\)。这样即可在原有求解程序中计入收缩，无须在每个时刻重新划分材料层。
+
+较粗网格已能得到接近的临界时间，但题目还要求输出固定距离处的含水率。收缩使这些位置相对于表面不断改变，因此选网格时同时检查临界时间与输出点的场值。经第~\ref{sec:q4-checks}~节检验，取 \(N=5120\)，相对容差为 \(10^{-9}\)，温度和含水率的绝对容差分别为 \(10^{-10}\)、\(10^{-12}\)。前 \(4~\mathrm h\) 的最大步长为 \(10~\mathrm s\)，此后为 \(300~\mathrm s\)；环境折点处分段，每 \(6~\mathrm h\) 保存状态并继续积分。
+
+\noindent\textbf{（2）判断全域达标并提取结果。}
+由于 \(r\) 与 \(\xi\) 一一对应，当前药材内的最大含水率为 \(M(t)=\max_{0\le\xi\le1}C(\xi,t)\)。按第三问的事件定位步骤，在接受步内检查全部节点，临界附近将检查点间隔缩小至不超过 \(1~\mathrm s\)，寻找 \(M(t)-0.15\) 首次由非负变负的区间，再用 Brent 方法求出交点。计算中直接比较全体节点，不预先指定最湿位置。
+
+按 \(0.1~\mathrm{cm}\) 间隔取实际位置 \(r_j\)。每个输出时刻先判断 \(r_j\le R(t)\)，再在 \(\xi_j(t)=r_j/R(t)\) 处作线性插值。表面值直接取 \(\xi=1\)；已落在药材之外的位置留空。按 \(60~\mathrm s\) 间隔输出，并补入临界时刻，得到 \texttt{result4.xlsx}。这里的 \(60~\mathrm s\) 是结果保存间隔，时间积分仍采用自适应步长。
+
+\subsubsection{结果与分析}
+\label{sec:q4-results}
+
+\noindent\textbf{（1）烘干时间与规定位置的含水率。}
+按上述模型计算，最后达标的位置仍在中心，全域含水率达到阈值的临界时间为
+\begin{equation}
+\boxed{t_*=183936.2344~\mathrm s\approx51.0934~\mathrm h}.
+\label{eq:q4-time-result}
+\end{equation}
+此时半径为 \(1.2000~\mathrm{cm}\)。中心与表面含水率分别为 \(0.1500\)、\(0.0526~\mathrm{kg/kg}\)，体积加权平均值为 \(0.1184~\mathrm{kg/kg}\)。每隔 \(6~\mathrm h\) 及临界时刻的规定位置结果列于表~\ref{tab:q4-results}。
+
+% 数据：问题四/outputs/q4/tables/table6.csv；当前表面始终为xi=1。
+\begin{table}[H]
+\centering
+\problemresultstyle
+\caption{考虑收缩时药材的含水率（\(\mathrm{kg/kg}\)）}
+\label{tab:q4-results}
+\begin{tabularx}{\linewidth}{|>{\centering\arraybackslash}p{\dimexpr0.25\linewidth-2\tabcolsep-\arrayrulewidth\relax}|*{4}{>{\centering\arraybackslash}X|}}
+\hline
+\multirow{2}{*}{时间/h} & \multicolumn{3}{c|}{到药材中心的距离/cm} & \multirow{2}{*}{药材表面} \\
+\cline{2-4}
+& 0 & 0.5 & 1 & \\
+\hline
+6 & 1.7188 & 1.5371 & 1.0222 & 0.4205 \\
+\hline
+12 & 0.7374 & 0.6544 & 0.4082 & 0.1669 \\
+\hline
+18 & 0.4087 & 0.3686 & 0.2397 & 0.0892 \\
+\hline
+24 & 0.2851 & 0.2610 & 0.1790 & 0.0673 \\
+\hline
+30 & 0.2263 & 0.2094 & 0.1493 & 0.0595 \\
+\hline
+36 & 0.1928 & 0.1797 & 0.1317 & 0.0560 \\
+\hline
+42 & 0.1712 & 0.1604 & 0.1200 & 0.0541 \\
+\hline
+48 & 0.1562 & 0.1468 & 0.1116 & 0.0530 \\
+\hline
+51.0934 & 0.1500 & 0.1413 & 0.1081 & 0.0526 \\
+\hline
+\end{tabularx}
+\par\smallskip
+\begin{minipage}{\linewidth}
+\small 注：末行为临界时刻，此时最大含水率等于阈值；表面列随 \(R(t)\) 移动，其余列为固定实际距离。临界后继续积分的严格达标检查见第~\ref{sec:q4-checks}~节。
+\end{minipage}
+\end{table}
+
+半径趋于稳定与烘干完成并不同步。到 \(24~\mathrm h\)，半径已减至 \(1.204~\mathrm{cm}\)，相对于临界时刻 \(1.200~\mathrm{cm}\) 的半径，已完成总收缩量的 \(99.5\%\)；但中心含水率仍为 \(0.2851~\mathrm{kg/kg}\)，还需 \(27.09~\mathrm h\) 才能全域达标，占总时长的 \(53.03\%\)。因此，外形变化很小之后，内部水分仍需继续向外迁移，不能凭尺寸基本稳定来判断烘干结束。
+
+\noindent\textbf{（2）同物性对照下的收缩作用。}
+第四问同时改变了物性与半径。为比较收缩的作用，我们另设一组固定半径对照：仍使用附录4、相同初态及 S60 环境，只令 \(R(t)\equiv R_0\)。该组临界时间为 \(129.8622~\mathrm h\)，而采用实测收缩半径后为 \(51.0934~\mathrm h\)，缩短 \(78.7688~\mathrm h\)，相对固定半径组减少 \(60.66\%\)。
+
+结合第三问，可以按“附录3、固定半径”到“附录4、固定半径”，再到“附录4、收缩半径”的顺序比较，如图~\ref{fig:q4-control} 所示。第一步使时间增加 \(72.3826~\mathrm h\)，第二步减少 \(78.7688~\mathrm h\)，两者合计使第四问比第三问缩短 \(6.3862~\mathrm h\)。该比较说明，直接使用前后两问的时间差，会掩盖物性变化与收缩各自造成的较大变化。
+
+物性变化为何会延长固定半径组的烘干时间，可以先比较两套扩散系数。在相同 \(C,T_K\) 下，由附录3、4得到
 \begin{equation}
 \frac{D_4}{D_3}=0.175\exp\!\left(\frac{0.15}{C}\right).
-\label{eq:ratioD}
+\label{eq:q4-diffusivity-ratio}
 \end{equation}
-当 \(C=0.15\) 时此比值约为 0.476，当 \(C=0.05\) 时约为 3.515，两者在约 \(C=0.0861\) 处相等。这说明附录 4 并非在所有含水率下都更慢；直接把两问时间差归因于收缩会混入物性变化。
+当 \(C=2.55\) 和 \(0.15~\mathrm{kg/kg}\) 时，该比值分别约为 \(0.186\) 和 \(0.476\)，附录4的扩散能力较低。但两式在 \(C\approx0.0861~\mathrm{kg/kg}\) 处相交，足够干的外层可能出现相反关系，不能将整段过程看成扩散系数按固定比例减小。同时，密度、比热容与导热系数也已更换，图中的第一步反映整套物性变化。
 
-正式计算要求 \(C>0\)、\(T_K>0\)，并检查全部物性有限且为正。负含水率通常说明误差控制或通量实现有问题，不可静默裁剪后宣布通过。
-
-\subsubsection{归一化材料坐标}
-
-用当前半径作尺子，将真实半径 \(r\) 变成相对位置 \(\xi\)：
-\begin{equation}
-\xi=\frac{r}{R(t)},\qquad r=R(t)\xi,\qquad 0\le\xi\le1.
-\label{eq:q4xi}
-\end{equation}
-中心始终是 \(\xi=0\)，表面始终是 \(\xi=1\)。若同一层材料始终处在总半径的四分之一处，它的编号就是 \(\xi=0.25\)；药材变细时，编号不变，真实位置变小。
-
-图~\ref{fig:q4material} 给出固定材料层与固定物理位置的区别。三行分别对应附件 2 的 \(0\)、\(6\)、\(72~\mathrm{h}\)；同色点表示相同材料坐标，虚线表示固定 \(0.5~\mathrm{cm}\) 位置。
-
+% 过程曲线：outputs/q4/figure_data/full_Cmax.csv、control_Cmax.csv。
+% 三组末值分别取问题三正式event、control_fixed_v2/event、space_v2_5120/event。
 \begin{figure}[H]
 \centering
-% \includegraphics[width=0.95\textwidth]{fig_q4_material.png}
-\caption{固定材料层与固定物理位置的区别。同色点表示相同材料坐标，虚线表示固定 \(0.5~\mathrm{cm}\) 位置。}
-\label{fig:q4material}
+\includegraphics[width=0.80\textwidth]{figure11.pdf}
+\caption{同物性下的收缩对照及三种模型的临界时间比较}
+\label{fig:q4-control}
 \end{figure}
 
-当网格一直固定在同一组 \(\xi_i\) 上，且材料按假设同比分布时，每次用 \(r_i=R(t)\xi_i\) 更新物理位置，同时保留 \(T_i,C_i\) 的状态定义，正是材料坐标方法。选用固定 \(\xi\) 网格后，不需要随半径减小删除外层节点，也不需要为几何变化反复插值状态。固定 \(0.5~\mathrm{cm}\) 是输出位置，随材料移动的 \(\xi=0.5\) 是内部编号，两者不同。
+\noindent\textbf{（3）传递距离缩短与表面驱动力减小。}
+式~\eqref{eq:q4-pde} 中，内部传递项随 \(R(t)^{-2}\) 缩放；侧面积与体积之比则为 \(2/R(t)\)。到临界时刻，\((R_0/R)^2=2.78\)、\(R_0/R=1.67\)，说明收缩既缩短内部迁移距离，也增大单位体积对应的交换面积。实际含水率下降速度还取决于表面与环境的差值，不能直接按这两个倍数放大。
 
-\subsubsection{空间导数与圆柱扩散算子}
+当前截面的体积加权平均含水率为 \(\overline C=2\int_0^1 C(\xi,t)\xi\,\mathrm d\xi\)。对式~\eqref{eq:q4-pde} 的水分方程积分，并代入表面条件，得到
+\begin{equation}
+-\frac{\mathrm d\overline C}{\mathrm dt}
+=\frac{2h_m}{R(t)}[C_s-C_e(t)].
+\label{eq:q4-mean-rate}
+\end{equation}
+对同一时刻、同一附录4物性的收缩组与固定组，将平均含水率下降速度相除，可写成
+\begin{equation}
+\frac{-\dot{\overline C}_{\mathrm{shr}}}
+     {-\dot{\overline C}_{\mathrm{fix}}}
+=\underbrace{\frac{R_0}{R(t)}}_{\displaystyle\mathcal G(t)}
+ \underbrace{\frac{C_{s,\mathrm{shr}}-C_e}
+ {C_{s,\mathrm{fix}}-C_e}}_{\displaystyle\mathcal Q(t)}.
+\label{eq:q4-rate-ratio}
+\end{equation}
+\(\mathcal G\) 表示几何变化的倍数，\(\mathcal Q\) 表示两组表面驱动力之比。我们以二者为横、纵坐标绘出变化轨迹（图~\ref{fig:q4-rate-mechanism}），并用等速线 \(\mathcal G\mathcal Q=1\) 区分两组下降速度的大小。
 
-在某个固定时刻，\(R(t)\) 对空间变量是常数。链式法则给出
-\begin{equation}
-\frac{\partial r}{\partial\xi}=R(t),\qquad \frac{\partial}{\partial r}=\frac{1}{R(t)}\frac{\partial}{\partial\xi},
-\end{equation}
-\begin{equation}
-T_r=\frac{T_\xi}{R(t)},\qquad C_r=\frac{C_\xi}{R(t)}.
-\end{equation}
-这表示同样的相对位置差，收缩后对应更短的真实距离，因此真实空间梯度会更陡。以水分方程为例，圆柱径向扩散算子逐项变化如下：
-\begin{equation}
-L_c=\frac{1}{r}\frac{\partial}{\partial r}\left(rD\frac{\partial C}{\partial r}\right),
-\end{equation}
-\begin{equation}
-rD C_r=(R\xi)D\frac{C_\xi}{R}=\xi D C_\xi,
-\end{equation}
-\begin{equation}
-\frac{\partial}{\partial r}\left(rD C_r\right)=\frac{1}{R}\frac{\partial}{\partial\xi}\left(\xi D C_\xi\right),
-\end{equation}
-\begin{equation}
-L_c=\frac{1}{R(t)^2}\frac{1}{\xi}\frac{\partial}{\partial\xi}\left(\xi D C_\xi\right).
-\label{eq:q4operator}
-\end{equation}
-热扩散把 \(D,C\) 分别换成 \(k,T\)，推导完全相同。\(1/R^2\) 的两个来源是外面的 \(1/r\) 和空间求导的 \(1/R\)，不能因为中间的 \(R\) 抵消就把最终几何尺度漏掉。
-
-中心是坐标表达的特殊点，不是物理奇点。对光滑标量 \(u\) 和正系数 \(a\)，有
-\begin{equation}
-\lim_{\xi\to0}\frac{1}{\xi}\frac{\partial}{\partial\xi}\left(\xi a\frac{\partial u}{\partial\xi}\right)=2a\frac{\partial^2u}{\partial\xi^2}\bigg|_{\xi=0}.
-\end{equation}
-实现中无需直接计算 \(1/0\)。第 5.3.1 节用具有有限体积的实心中心控制体，中心内侧面积为零，因此中心内侧通量自动为零。
-
-\subsubsection{时间导数与材料运动}
-
-用波浪号暂时区分同一个场的两种坐标表示：
-\begin{equation}
-\widetilde{C}(\xi,t)=C(R(t)\xi,t),
-\end{equation}
-\begin{equation}
-\frac{\partial\widetilde{C}}{\partial t}\bigg|_\xi=\frac{\partial C}{\partial t}\bigg|_r+\dot{R}\xi\frac{\partial C}{\partial r},
-\end{equation}
-\begin{equation}
-\frac{\partial C}{\partial t}\bigg|_r=\widetilde{C}_t-\frac{\dot{R}}{R}\xi\widetilde{C}_\xi.
-\end{equation}
-固定 \(r\) 观察，相当于把测量仪放在房间里的一个位置；固定 \(\xi\) 观察，相当于把测量仪贴在一层材料上。材料在移动，两种时间变化率自然不同。
-
-均匀同比收缩对应的径向材料速度和材料导数为
-\begin{equation}
-v_r(r,t)=\frac{\dot{R}(t)}{R(t)}r=\dot{R}(t)\xi,
-\end{equation}
-\begin{equation}
-\frac{DC}{Dt}=\frac{\partial C}{\partial t}\bigg|_r+v_rC_r=\widetilde{C}_t.
-\end{equation}
-因此，我们先选择含材料导数的有效物理方程，再变换到 \(\xi\)，此时移动项被材料运动包含。只有坐标变换，并不能把一个静止介质方程自动变成收缩介质方程。
-
-\subsubsection{连续热湿模型}
-
-主模型采用材料局部储热和有效水分扩散：
-\begin{equation}
-B(C)\frac{DT}{Dt}=\frac{1}{r}\frac{\partial}{\partial r}\left(rk\frac{\partial T}{\partial r}\right),
-\end{equation}
-\begin{equation}
-\frac{DC}{Dt}=\frac{1}{r}\frac{\partial}{\partial r}\left(rD\frac{\partial C}{\partial r}\right).
-\end{equation}
-代入材料坐标变换，在固定区间上得到
-\begin{equation}
-B(C)T_t=\frac{1}{R(t)^2\xi}\frac{\partial}{\partial\xi}\left[\xi k(C)T_\xi\right],
-\label{eq:q4heat}
-\end{equation}
-\begin{equation}
-C_t=\frac{1}{R(t)^2\xi}\frac{\partial}{\partial\xi}\left[\xi D(C,T_K)C_\xi\right].
-\label{eq:q4moisture}
-\end{equation}
-热方程的 \(B(C)T_t\) 表示当前热容量乘升温速率。不能擅自改成 \((BT)_t\)，因为后者多出 \(TB_CC_t\)，已经换了储热模型。
-
-中心取对称条件，初始状态均匀：
-\begin{equation}
-T_\xi(0,t)=C_\xi(0,t)=0,\qquad T(\xi,0)=28,\qquad C(\xi,0)=2.55.
-\end{equation}
-表面用 \(T_s=T(1,t)\)、\(C_s=C(1,t)\)，统一将向外通量记为正。物理坐标与材料坐标下的热边界分别为
-\begin{equation}
--\frac{k(C_s)}{R(t)}T_\xi(1,t)=h\left[T_s-T_\infty(t)\right],
-\end{equation}
-水分边界同样带上梯度尺度，扩散函数必须使用绝对温度：
-\begin{equation}
--\frac{D(C_s,T_{K,s})}{R(t)}C_\xi(1,t)=h_m\left[C_s-C_e(t)\right].
-\end{equation}
-热风比药材热时，热通量为负，代表热从外部进入；材料比环境湿时，水分通量为正，代表向外失水。不要对通量取绝对值，否则会破坏边界方向。
-
-\subsection{模型求解}
-
-\subsubsection{固定材料网格与中心控制体}
-
-取 \(N\) 个均匀径向区间，共 \(N+1\) 个节点，中心和表面都是真实未知量：
-\begin{equation}
-\xi_i=i/N,\quad i=0,1,\dots,N,
-\end{equation}
-\begin{equation}
-\xi_{i+1/2}=(\xi_i+\xi_{i+1})/2,\qquad \xi_{-1/2}=0,\qquad \xi_{N+1/2}=1.
-\end{equation}
-节点之间的中心是控制面。每个控制体围绕一个节点；第一块是实心圆柱核心，中间是环壳，最后一块接到真实表面。体积和面积使用同一个半径函数：
-\begin{equation}
-r_i(t)=R(t)\xi_i,\qquad S_{i+1/2}(t)=2\pi LR(t)\xi_{i+1/2},
-\end{equation}
-\begin{equation}
-V_i(t)=\pi LR(t)^2\left(\xi_{i+1/2}^2-\xi_{i-1/2}^2\right),
-\end{equation}
-\begin{equation}
-V_0(t)=\pi LR(t)^2\xi_{1/2}^2,\qquad S_{-1/2}=0.
-\end{equation}
-第一个节点 \(C_0\) 代表中心小控制体的含水率，网格加密后趋近连续模型的中心值。中心内侧没有通量，但外侧仍可向下一层传水，不能把整个中心控制体冻结。
-
-每次计算都能做的几何自检为
-\begin{equation}
-\sum_{i=0}^NV_i(t)=\pi LR(t)^2,\qquad S_{N+1/2}=2\pi LR(t),
-\end{equation}
-\begin{equation}
-\dot{V}_i(t)=2\frac{\dot{R}(t)}{R(t)}V_i(t).
-\end{equation}
-第一式检查控制体是否覆盖完整圆柱；第二式检查表面面积；第三式为后面的移动平衡提供依据。
-
-\subsubsection{内部通量与非线性水分重构}
-
-定义正方向向外，每个内部界面只计算一次通量，左右相邻控制体使用同一个数值、相反符号。热通量使用正的调和平均系数：
-\begin{equation}
-k_{i+1/2}=\frac{2k_ik_{i+1}}{k_i+k_{i+1}},
-\end{equation}
-\begin{equation}
-F_{i+1/2}^T=-S_{i+1/2}k_{i+1/2}\frac{T_{i+1}-T_i}{r_{i+1}-r_i}
-=-2\pi L\xi_{i+1/2}k_{i+1/2}\frac{T_{i+1}-T_i}{\xi_{i+1}-\xi_i}.
-\end{equation}
-面积正比于 \(R\)，节点间距也正比于 \(R\)，所以内部通量里的显式半径抵消。储量的体积仍正比于 \(R^2\)，最后的状态变化率仍包含几何影响。
-
-低含水率时 \(D\) 随 \(C\) 急剧变化。把一条边上所有位置都用同一个端点的 \(D\) 代替，可能误判薄的干燥层阻力。将扩散系数拆分为
-\begin{equation}
-D(C,T_K)=A(T_K)f(C),\qquad A(T_K)=4.2\times10^{-4}e^{-3850/T_K},\qquad f(C)=e^{-0.30/C}.
-\end{equation}
-定义势函数
-\begin{equation}
-\Phi(C)=\int_0^Cf(z)\,\mathrm{d}z,
-\end{equation}
-则
-\begin{equation}
-\Delta\Phi=\Phi(C_R)-\Phi(C_L)=(C_R-C_L)\int_0^1e^{-0.30/[C_L+s(C_R-C_L)]}\,\mathrm{d}s.
-\end{equation}
-界面水分通量为
-\begin{equation}
-F_{i+1/2}^C=-2\pi L\xi_{i+1/2}A(T_{K,i+1/2})\frac{\Delta\Phi}{\xi_{i+1}-\xi_i},
-\end{equation}
-\begin{equation}
-T_{K,i+1/2}=\frac{T_i+T_{i+1}}{2}+273.15.
-\end{equation}
-这是对含水率非线性的积分处理，界面温度仍是近似，不是整个非线性问题的精确解。用 Gauss 积分计算区间积分，并比较 3、5、8 点结果；当 \(C_L=C_R\) 时直接令势差为零，避免相减误差。反转左右节点后，势差和通量都应反号。
-
-\subsubsection{有限体积状态方程}
-
-中心内侧通量为零，表面通量由物理边界直接给出：
-\begin{equation}
-F_{-1/2}^T=F_{-1/2}^C=0,
-\end{equation}
-\begin{equation}
-F_{N+1/2}^T=2\pi LR(t)h\left[T_N-T_\infty(t)\right],
-\end{equation}
-\begin{equation}
-F_{N+1/2}^C=2\pi LR(t)h_m\left[C_N-C_e(t)\right].
-\end{equation}
-对每个控制体使用“输入减输出”，得到联立常微分方程：
-\begin{equation}
-\frac{\mathrm{d}T_i}{\mathrm{d}t}=\frac{F_{i-1/2}^T-F_{i+1/2}^T}{B(C_i)V_i(t)},
-\end{equation}
-\begin{equation}
-\frac{\mathrm{d}C_i}{\mathrm{d}t}=\frac{F_{i-1/2}^C-F_{i+1/2}^C}{V_i(t)}.
-\end{equation}
-两式中的 \(V_i(t)\) 已经包含 \(R^2\)。若使用上述真实面积通量和真实体积，就不能再把右侧乘一次 \(R^{-2}\)。同理，表面面积里的 \(R\) 不能遗漏。
-
-\subsubsection{时间推进与事件定位}
-
-把 \(N+1\) 个温度与 \(N+1\) 个含水率组成状态向量，采用同一固定顺序存储。BDF 在每一步根据误差估计自动选步，适合预热较快、后期失水较慢的联立系统。每次右侧计算依次取得半径与环境，更新物性、几何和界面通量，最后形成温度与水分变化率。
-
-温度与含水率量纲不同，使用分量绝对容差。可从 \(\mathrm{rtol}=10^{-6}\)、温度 \(\mathrm{atol}=10^{-7}~^\circ\mathrm{C}\)、含水率 \(\mathrm{atol}=10^{-9}~\mathrm{kg/kg}\) 起试；这些只是候选值。后续收紧到原来的十分之一，比较事件和关键剖面，再决定正式配置。使用相邻层耦合产生的稀疏雅可比结构加速，但不能错误删掉温湿交叉依赖。
-
-先在全域定义最大含水率，而不是提前认定中心一定最慢：
-\begin{equation}
-C_{\max}(t)=\max_{0\le\xi\le1}C(\xi,t),\qquad g(t)=C_{\max}(t)-0.15,
-\end{equation}
-\begin{equation}
-t_{\mathrm{crit}}=\inf\{t>0:C_{\max}(t)<0.15\}.
-\end{equation}
-若场连续并发生向下穿越，这个下确界处通常满足等号。因而数值上定位 \(g(t)=0\)，将它作为临界烘干时长，同时给出根后实际积分点的严格达标检查。不能声称等号点已经严格小于阈值。
-
-图~\ref{fig:q4event} 给出临界事件与收缩效应的对照。主图画 Q4 full 与 Q4 control 的全域最大含水率，加入 0.15 水平线；另设临界区局部图，标出根、括区与根后检查点。
-
+% 由两组diagnostics.csv/fields.npz在相同绝对时刻提取；只画4 h至收缩组临界时刻。
 \begin{figure}[H]
 \centering
-% \includegraphics[width=0.95\textwidth]{fig_q4_event.png}
-\caption{临界事件与收缩效应。主图：Q4 full 与 Q4 control 的全域最大含水率；局部图：临界区放大。}
-\label{fig:q4event}
+\qoneplaceholder{4.8cm}{横轴 \(\mathcal G=R_0/R\)，纵轴为表面驱动力比 \(\mathcal Q\)\\[0.6em]
+绘制 \(4~\mathrm h\) 至收缩组临界时刻的轨迹，以箭头表示时间方向\\[0.6em]
+背景给出少量 \(\mathcal G\mathcal Q\) 等值线，加粗等速线 \(\mathcal G\mathcal Q=1\)\\[0.6em]
+标注 \(6\)、\(12\)、\(24~\mathrm h\)，均比较两组的相同绝对时刻}
+\caption{几何变化与表面驱动力对平均含水率下降速度的共同作用}
+\label{fig:q4-rate-mechanism}
 \end{figure}
 
-\subsection{结果分析}
+\(6~\mathrm h\) 时，\(\mathcal G=1.456\)、\(\mathcal Q=0.939\)，收缩组的平均含水率下降速度为固定组的 \(1.367\) 倍；到 \(24~\mathrm h\)，\(\mathcal G\) 增至 \(1.661\)，\(\mathcal Q\) 却降至 \(0.264\)，速度比仅为 \(0.439\)。此时收缩组的平均含水率已降至 \(0.2055~\mathrm{kg/kg}\)，低于固定组的 \(0.4452~\mathrm{kg/kg}\)。收缩组较早排出了更多水分，随后因表面更干而减慢，因此后期瞬时下降速度较小与总烘干时间较短可以同时出现。
 
-\subsubsection{题目指定结果}
+\subsubsection{模型检验}
+\label{sec:q4-checks}
 
-根据上述模型和求解方法，计算得到每 \(6~\mathrm{h}\)、距药材中心 \(0\)、\(0.5\)、\(1\)、\(1.5\)、\(2~\mathrm{cm}\) 处以及药材表面的含水率，并给出烘干结束时间，列入表~\ref{tab:q4C}。完整结果（每隔 \(60~\mathrm{s}\)、固定物理位置每隔 \(0.1~\mathrm{cm}\)）保存至 \texttt{result4.xlsx}。
+本问增加了移动边界，需要先检查坐标和几何的处理，再检查临界时间与固定位置输出的精度。令半径保持不变，与另行按实际半径、面积和体积组装的程序比较，检验材料坐标能否退回固定区域模型；再让半径变化而关闭表面交换，检查均匀状态能否保持。对动态非均匀场，选取已知光滑函数，代回方程得到源项，进行连续制造解检验。主要结果列于表~\ref{tab:q4-checks}。
 
+% 数据：validation/results/{fixed_radius,moving_mms,space,numerical}.json及正式逐时刻复查。
 \begin{table}[H]
 \centering
-\caption{药材烘干过程的水分浓度}
-\begin{tabularx}{\textwidth}{|>{\centering\arraybackslash}p{2.5cm}|*{6}{>{\centering\arraybackslash}X|}}
-\hline
-\multirow{2}{*}{时间/h} & \multicolumn{6}{c|}{到药材中心的距离/cm} \\
-\cline{2-7}
- & 0 & 0.5 & 1 & 1.5 & 2 & 药材表面 \\
-\hline
-6  &  &  &  &  &  &  \\
-\hline
-12 &  &  &  &  &  &  \\
-\hline
-18 &  &  &  &  &  &  \\
-\hline
-$\vdots$ &  &  &  &  &  &  \\
-\hline
-烘干结束时间 &  &  &  &  &  &  \\
-\hline
+\caption{第四问移动区域模型的数值检验}
+\label{tab:q4-checks}
+\small
+\renewcommand{\arraystretch}{1.05}
+\begin{tabularx}{\linewidth}{@{}l>{\centering\arraybackslash}X>{\raggedleft\arraybackslash}X@{}}
+\toprule
+检验项目 & 比较设置 & 主要结果 \\
+\midrule
+固定半径退化 & 材料坐标与独立物理坐标实现 & 最大温差 \(4.263\times10^{-14}~^\circ\mathrm C\)，最大含水率差 \(6.661\times10^{-16}\) \\
+动态均匀场 & 关闭交换，保留半径变化 & 均匀温度与含水率均无数值漂移 \\
+移动制造解 & \(N=20,40,80,160\) & 误差约二阶下降；\(N=160\) 时最大含水率误差 \(1.422\times10^{-8}\) \\
+收缩组网格加密 & \(N=5120\to10240\) & 临界时间差 \(0.002180~\mathrm s\)；输出点最大含水率差 \(7.265\times10^{-6}\) \\
+固定组网格加密 & \(N=5120\to10240\) & 临界时间差 \(0.004971~\mathrm s\) \\
+时间推进对照 & 严格时间设置与 BDF/Radau & 临界时间最大差 \(0.002554~\mathrm s\) \\
+\bottomrule
 \end{tabularx}
+\par\smallskip
+\begin{minipage}{\linewidth}
+\small 注：含水率单位为 \(\mathrm{kg/kg}\)。收缩组输出点比较覆盖截至基准临界时刻的全部 \(3067\) 个保存时刻，在两组网格共同的固定实际距离及表面处进行；均包含初态。
+\end{minipage}
 \end{table}
 
-\(6~\mathrm{h}\) 时实测半径为 \(1.374~\mathrm{cm}\)，所以 1.2 和 \(1.3~\mathrm{cm}\) 仍在内部，应写入该行。\(72~\mathrm{h}\) 时半径为 \(1.198~\mathrm{cm}\)，1.2 和 \(1.3~\mathrm{cm}\) 已在外部，这些格应留空。空白表示“该位置已不属于药材”，不是“含水率为零”或“计算失败”。最后一列保持“药材表面”，每行取 \(C(1,t_k)\)，其真实位置为 \(R(t_k)\)。
+对所有环层的水分方程求和，内部通量相互抵消。记含水率体积积分为 \(I_C(t)\)，相对体积因子为 \(J(t)\)。由 \(V_i(t)=J(t)V_i(0)\)，整体收支可写为
+\begin{equation}
+\begin{aligned}
+I_C(t)&=\sum_iV_i(t)C_i(t),\qquad J(t)=\left[\frac{R(t)}{R_0}\right]^2,\\
+\frac{\mathrm d}{\mathrm dt}\left(\frac{I_C}{J}\right)
+&=-\frac{G_s}{J},\qquad
+G_s=2\pi LR(t)h_m[C_s-C_e].
+\end{aligned}
+\label{eq:q4-moving-balance}
+\end{equation}
+用另行保存的表面通量积分复核，按初始 \(I_C(0)\) 归一化的最大残差为 \(3.091\times10^{-9}\)。这里检验的是有效含水率方程的收支；\(I_C\) 为含水率体积积分，不能直接当作实际水分质量。
 
-\subsubsection{半径收缩与物理域、材料域含水率}
+将固定位置输出改用 PCHIP 重构，两种结果的最大含水率差为 \(7.527\times10^{-6}~\mathrm{kg/kg}\)。根据网格、时间推进和事件定位的对照，临界时间的数值误差工程估计约为 \(0.0116~\mathrm s\)。从临界状态继续积分 \(1~\mathrm s\)，最大含水率降至 \(0.14999949~\mathrm{kg/kg}\)。扣除场值误差估计后，距阈值仍有 \mbox{\(5.075\times10^{-7}~\mathrm{kg/kg}\)} 的余量，支持交点后的严格达标。上述检查针对径向有效模型，其长期端面影响仍需另外检验。
 
-图~\ref{fig:q4field} 给出物理域含水率和材料域含水率两幅时空图。F3 中 \(r>R(t)\) 的区域必须遮罩留白，不能填零、复制边界或让插值外推。F4 的每一行相对位置均有意义，横向比较的是同一材料层。
+\subsubsection{灵敏度与稳健性分析}
+\label{sec:q4-sensitivity}
 
-\begin{figure}[H]
+前述数值检验说明所选方程求解稳定，实际答案还取决于半径输入及长期环境。我们保持相同初态，每次只改变一项输入并重新计算，结果列于表~\ref{tab:q4-sensitivity}。
+
+\noindent\textbf{（1）半径插值与收缩幅度。}
+先以分段线性插值代替 PCHIP，检查观测点之间的连接方式；再保持初始半径不变，按
+\begin{equation}
+R_\lambda(t)=R_0-\lambda[R_0-R(t)],\qquad
+\lambda=0.98,\ 1.02
+\label{eq:q4-radius-perturbation}
+\end{equation}
+改变收缩幅度。这里的 \(\pm2\%\) 作用于 \(R_0-R(t)\)，而非将整个半径放大、缩小 \(2\%\)。两种检验分别考察插值选择与收缩程度，后者是人为设置的扰动。
+
+% 数据：问题四/outputs/q4/输入情景比较.csv；变化量均相对S60、PCHIP基准。
+\begin{table}[H]
 \centering
-% \includegraphics[width=0.95\textwidth]{fig_q4_field.png}
-\caption{物理域含水率（上）与材料域含水率（下）。上图中 \(r>R(t)\) 区域留白；两图共用时间轴和色标。}
-\label{fig:q4field}
-\end{figure}
+\caption{半径与长期环境变化对第四问临界时间的影响}
+\label{tab:q4-sensitivity}
+\small
+\renewcommand{\arraystretch}{1.05}
+\begin{tabularx}{\linewidth}{@{}l>{\centering\arraybackslash}Xrr@{}}
+\toprule
+类别 & 计算情景 & 临界时间/h & 时间变化/h \\
+\midrule
+基准 & PCHIP 半径、S60 环境 & 51.0934 & 0 \\
+\addlinespace[3pt]
+\multirow{3}{*}{半径输入} & 分段线性插值 & 51.0969 & +0.0035 \\
+& 收缩幅度减小 \(2\%\) & 52.2563 & +1.1629 \\
+& 收缩幅度增大 \(2\%\) & 49.9476 & \(-1.1458\) \\
+\addlinespace[3pt]
+\multirow{3}{*}{平台取法} & 末值延拓 S0 & 50.8207 & \(-0.2727\) \\
+& 末 \(30~\mathrm{min}\) 均值 S30 & 51.0719 & \(-0.0215\) \\
+& 末 \(90~\mathrm{min}\) 均值 S90 & 51.0819 & \(-0.0115\) \\
+\addlinespace[3pt]
+\multirow{4}{*}{长期水平} & 温度降低 \(1~^\circ\mathrm C\) & 52.7309 & +1.6375 \\
+& 温度升高 \(1~^\circ\mathrm C\) & 49.5266 & \(-1.5668\) \\
+& 环境含水率降低 \(0.005\) & 50.9952 & \(-0.0982\) \\
+& 环境含水率升高 \(0.005\) & 51.2202 & +0.1268 \\
+\bottomrule
+\end{tabularx}
+\par\smallskip
+\begin{minipage}{\linewidth}
+\small 注：长期环境变化仅作用于 \(4~\mathrm h\) 以后，环境含水率单位为 \(\mathrm{kg/kg}\)；环境情景均使用同一实测半径曲线。
+\end{minipage}
+\end{table}
 
-两图使用同一份场数据、相同时间范围和色标范围。若增加 \(0.02\sim0.20~\mathrm{kg/kg}\) 的后期局部放大，清楚标注它使用局部色标；主图仍保留 0 至 2.55 的完整信息。阈值等值线只在场中确实存在 0.15 交界时绘制。
-
-\subsubsection{收缩效应}
-
-同物性对照才回答收缩的影响。Q4 control 使用附录 4 物性、固定 \(2~\mathrm{cm}\) 半径；Q4 full 使用附录 4 物性、附件 2 实测半径。两者环境、初值、边界及数值精度一致，收缩时间差为
+更换半径插值后，临界时间只延后 \(12.57~\mathrm s\)；收缩幅度减小、增大 \(2\%\) 时，则分别延后 \(1.1629~\mathrm h\)、提前 \(1.1458~\mathrm h\)。用两端结果作中心差分，得到基准附近的无量纲灵敏度
 \begin{equation}
-\Delta t_{\mathrm{shrink}}=t_{\mathrm{crit,full}}-t_{\mathrm{crit,control}}.
+S_\lambda=\frac{1}{t_*(1)}
+\frac{t_*(1.02)-t_*(0.98)}{0.04}\approx-1.130.
+\label{eq:q4-radius-sensitivity}
 \end{equation}
-这个差值表示附录 4 及既定环境下的模型几何效应，不能称为实验因果效应。若还要分解物性与几何的交互作用，可补做“附录 3 加收缩”的第四个组合。
+即在本次扰动范围附近，收缩幅度每增加 \(1\%\)，烘干时间约减少 \(1.13\%\)，对应约 \(34.63~\mathrm{min}\)。相比插值形式，收缩幅度的取值更值得关注。
 
-最终半径对应约 2.787 的内部扩散尺度倍率、约 1.669 的侧面积体积比倍率。它们解释几何机制，不等于实际失水速率也乘相同倍数。
+\noindent\textbf{（2）长期环境的取法与水平。}
+采用 S0、S30、S60、S90 四种延拓，临界时间的最大跨度为 \(16.36~\mathrm{min}\)。改变均值窗口的影响较小，直接取末个观测值的偏移较大。若长期温度升高、降低 \(1~^\circ\mathrm C\)，烘干时间分别减少 \(1.5668~\mathrm h\)、增加 \(1.6375~\mathrm h\)，中心差分约为 \(-1.6022~\mathrm{h/{}^\circ C}\)。环境含水率升高、降低 \(0.005~\mathrm{kg/kg}\)，则分别延后 \(7.61~\mathrm{min}\)、提前 \(5.89~\mathrm{min}\)。在给定扰动下，长期温度水平和收缩幅度均能带来小时量级的变化。
 
-\subsubsection{结果小结}
-
-问题四结果呈现三个特征：第一，全域最大含水率首次下降至 \(0.15~\mathrm{kg/kg}\) 的时间即移动区域内的烘干结束时间；第二，半径收缩缩短了水分迁移路径，同物性对照下临界时间发生改变；第三，输出表在固定物理位置处必须随当前半径判定是否在域内，域外留空，不能填零或复制边界值。
-
-\subsection{灵敏度与稳健性分析}
-
-\subsubsection{半径输入选择}
-
-半径幅度敏感性用保持初始半径的变换：
-\begin{equation}
-R_\lambda(t)=R_0-\lambda\left[R_0-R_{\mathrm{base}}(t)\right],
-\end{equation}
-例如 \(\lambda=0.98,1,1.02\) 仅作为扰动情景，先检查正性与单调性，不称为仪器误差范围。若事件晚于 \(72~\mathrm{h}\)，再对 \(72~\mathrm{h}\) 后的平台取值或小幅继续收缩做连续连接的独立情景，并说明新假设。
-
-图~\ref{fig:q4radsens} 给出不同半径插值与幅度扰动下的临界时间范围。
-
-\begin{figure}[H]
-\centering
-% \includegraphics[width=0.85\textwidth]{fig_q4_radsens.png}
-\caption{半径插值与幅度扰动对临界时间的影响。PCHIP 与分段线性对照，\(\lambda=0.98,1,1.02\) 为人为情景。}
-\label{fig:q4radsens}
-\end{figure}
-
-\subsubsection{长期环境比较}
-
-长期环境比较末值、末 30/60/90 min 时间均值；必要时增加温度 \(\pm1~^\circ\mathrm{C}\)、环境含水率 \(\pm0.005\) 的人工情景。改变环境仍沿用实测半径，属于“半径输入固定条件下”的敏感性，不是新的真实环境收缩预测。输出各情景临界时间范围，不能把它标成 \(95\%\) 置信区间。
-
-\subsubsection{网格无关性检验}
-
-空间候选网格取 \(N=320,640,1280\)；必要时继续加密。以临界时间为主指标，同时比较中心、表面、表~\ref{tab:q4C} 各位置和临界剖面。不能只看曲线肉眼重合。正式配置原则上需有更细配置支撑。
-
-图~\ref{fig:q4grid} 给出不同网格下临界时间趋于同一值的折线。
-
-\begin{figure}[H]
-\centering
-% \includegraphics[width=0.85\textwidth]{fig_q4_grid.png}
-\caption{网格无关性检验。不同网格密度下临界时间趋于同一值。}
-\label{fig:q4grid}
-\end{figure}
-
-\subsubsection{步长无关性检验}
-
-固定足够细网格后比较容差、最大步长，再做 BDF 与 Radau 对照；只改变一个因素，保留各自完整配置。候选最大步长为 \(600\)、\(300\)、\(150~\mathrm{s}\)。图~\ref{fig:q4step} 给出不同步长下临界时间趋于同一值的折线。
-
-\begin{figure}[H]
-\centering
-% \includegraphics[width=0.85\textwidth]{fig_q4_step.png}
-\caption{步长无关性检验。不同最大步长下临界时间趋于同一值。}
-\label{fig:q4step}
-\end{figure}
-
-\subsubsection{数值验证体系}
-
-问题四的验证层次包括：
-
-\begin{itemize}
-\item V1 输入与物性：节点重现、单位换算、低含水率扫描数据处理和经验式实现；
-\item V2 几何：多时刻检验总体积、表面面积、节点对应材料层和真实几何一致；
-\item V3 固定半径退化：同附录 4、同网格比较物理坐标与材料坐标变换与几何因子一致；
-\item V4 均匀状态保持：半径变化、边界零通量，初始常数是否误把体积缩小算成状态变化；
-\item V5 动态制造解：解析移动半径、非均匀温湿场、已知源项动态几何和非线性算子正确性；
-\item V6 移动平衡：独立积分并细化积分采样，表面交换与有效积分量一致；
-\item V7 数值收敛：网格、容差、步长、通量积分、求解器对照结果是否受数值配置影响；
-\item V8 事件与导出：首次穿越、根后达标、域外掩膜题目结论和交付数据正确。
-\end{itemize}
-
-图~\ref{fig:q4verify} 给出数值验证面板。F6 拆成小图：固定半径退化、动态制造解、达标时间收敛、移动平衡残差。
-
-\begin{figure}[H]
-\centering
-% \includegraphics[width=0.95\textwidth]{fig_q4_verify.png}
-\caption{数值验证面板。(a) 固定半径退化；(b) 动态制造解；(c) 达标时间收敛；(d) 移动平衡残差。}
-\label{fig:q4verify}
-\end{figure}
-
-\subsubsection{移动控制体的平衡式}
-
-定义含水率的体积加权积分，以及相对体积因子：
-\begin{equation}
-I_C(t)=\sum_{i=0}^NV_i(t)C_i(t),\qquad J(t)=\frac{I_C(t)}{\pi LR(t)^2}.
-\end{equation}
-对所有水分方程求和，内部通量抵消；再对 \(I_C\) 求导，必须同时对体积和含水率求导：
-\begin{equation}
-\dot{I}_C=2\frac{\dot{R}}{R}I_C-F_{N+1/2}^C,
-\end{equation}
-\begin{equation}
-\frac{\mathrm{d}}{\mathrm{d}t}\left(\frac{I_C}{J}\right)=-\frac{F_{N+1/2}^C}{J}.
-\end{equation}
-通俗地说，即使每层含水率完全不变，体积变小也会让 \(I_C\) 变小。不能把全部变化都解释成从表面失去的水。除以 \(J\) 后剔除了纯几何体积缩小，才能与本模型的表面通量配平。
-
-独立的积分残差为
-\begin{equation}
-e_{\mathrm{bal}}(t)=\frac{I_C(t)/J(t)-I_C(0)+\int_0^tF_{N+1/2}^C(s)/J(s)\,\mathrm{d}s}{I_C(0)}.
-\end{equation}
-用已保存的状态重新计算表面通量，采用独立时间积分，并将积分采样间隔减半确认残差稳定。不能只把求解器右侧求和再代回同一式子。
-
-\subsubsection{模型适用边界}
-
-数值精度、参数敏感性、物理适用性是三件事。前两件已作计算；附录 4 物性、附件 2 半径输入、环境水分驱动关系
-
-
-
-
+这些环境比较始终使用附件2的同一半径曲线，反映的是已给定收缩过程下的温湿响应。若用于调整真实烘干工况，还需补充新环境下的半径观测或收缩关系。所有收缩情景均在 \(72~\mathrm h\) 内达标，未用到半径记录之外的延拓；因此，本问的 \(51.0934~\mathrm h\) 应连同 S60 环境和实测收缩输入一起报告，表中情景范围也不作为统计置信区间。
 \section{模型评价与推广}
 
 \subsection{模型优点}

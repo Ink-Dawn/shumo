@@ -1,0 +1,20 @@
+{
+  "run_id": "space_v2_5120",
+  "tcrit_s": 183936.23441390254,
+  "tcrit_h": 51.09339844830626,
+  "strict_check_s": 183937.23441390254,
+  "strict_check_Cmax": 0.14999948657707998,
+  "epsilon_C": 5.949068697305156e-09,
+  "engineering_time_estimate_s": 0.011603892119323568,
+  "radius_at_event_cm": 1.2,
+  "control_tcrit_h": 129.86216189888862,
+  "shrink_difference_h": -78.76876345058234,
+  "shrink_relative": -0.6065566928718785,
+  "q3_tcrit_h": 57.479569972332875,
+  "q4_minus_q3_h": -6.386171524026615,
+  "max_balance_residual": 3.0914288286823206e-09,
+  "scenario_range_h": [
+    49.52658473815036,
+    52.73090267871334
+  ]
+}

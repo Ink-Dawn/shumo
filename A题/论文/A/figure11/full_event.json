@@ -1,0 +1,153 @@
+{
+  "time_s": 183936.23441390254,
+  "time_h": 51.09339844830626,
+  "original_bracket_s": [
+    183935.94027830224,
+    183936.94027830224
+  ],
+  "bracket_s": [
+    183936.2344067202,
+    183936.234421979
+  ],
+  "bracket_g": [
+    3.0144220453109938e-12,
+    -4.819866727956423e-12
+  ],
+  "bracket_width_s": 1.52587890625e-05,
+  "root_g": -6.731837309814637e-13,
+  "candidate_brackets_s": [
+    [
+      183935.94027830224,
+      183936.94027830224
+    ]
+  ],
+  "probe_count": 301,
+  "strict_post_pass": true,
+  "epsilon_C": 5.949068697305156e-09,
+  "at_root": {
+    "Cmax": 0.1499999999993268,
+    "node": 0,
+    "xi": 0.0,
+    "r_m": 0.0,
+    "center_is_max": true
+  },
+  "pre_checks": [
+    {
+      "time_s": 183926.23441390254,
+      "offset_s": -10.0,
+      "Cmax": 0.15000513460172796,
+      "node": 0,
+      "xi": 0.0,
+      "r_m": 0.0,
+      "center_is_max": true
+    },
+    {
+      "time_s": 183931.23441390254,
+      "offset_s": -5.0,
+      "Cmax": 0.15000256721945743,
+      "node": 0,
+      "xi": 0.0,
+      "r_m": 0.0,
+      "center_is_max": true
+    },
+    {
+      "time_s": 183934.23441390254,
+      "offset_s": -2.0,
+      "Cmax": 0.15000102686792327,
+      "node": 0,
+      "xi": 0.0,
+      "r_m": 0.0,
+      "center_is_max": true
+    },
+    {
+      "time_s": 183935.23441390254,
+      "offset_s": -1.0,
+      "Cmax": 0.1500005134303825,
+      "node": 0,
+      "xi": 0.0,
+      "r_m": 0.0,
+      "center_is_max": true
+    }
+  ],
+  "post_checks": [
+    {
+      "time_s": 183937.23441390254,
+      "offset_s": 1.0,
+      "Cmax": 0.14999948657707998,
+      "node": 0,
+      "xi": 0.0,
+      "r_m": 0.0,
+      "center_is_max": true
+    },
+    {
+      "time_s": 183938.23441390254,
+      "offset_s": 2.0,
+      "Cmax": 0.14999897316054706,
+      "node": 0,
+      "xi": 0.0,
+      "r_m": 0.0,
+      "center_is_max": true
+    },
+    {
+      "time_s": 183941.23441390254,
+      "offset_s": 5.0,
+      "Cmax": 0.14999743294668694,
+      "node": 0,
+      "xi": 0.0,
+      "r_m": 0.0,
+      "center_is_max": true
+    },
+    {
+      "time_s": 183946.23441390254,
+      "offset_s": 10.0,
+      "Cmax": 0.149994866050755,
+      "node": 0,
+      "xi": 0.0,
+      "r_m": 0.0,
+      "center_is_max": true
+    },
+    {
+      "time_s": 183956.23441390254,
+      "offset_s": 20.0,
+      "Cmax": 0.1499897327452157,
+      "node": 0,
+      "xi": 0.0,
+      "r_m": 0.0,
+      "center_is_max": true
+    },
+    {
+      "time_s": 183976.23441390254,
+      "offset_s": 40.0,
+      "Cmax": 0.14997946807872556,
+      "node": 0,
+      "xi": 0.0,
+      "r_m": 0.0,
+      "center_is_max": true
+    },
+    {
+      "time_s": 184016.23441390254,
+      "offset_s": 80.0,
+      "Cmax": 0.14995894652051087,
+      "node": 0,
+      "xi": 0.0,
+      "r_m": 0.0,
+      "center_is_max": true
+    },
+    {
+      "time_s": 184056.23441390254,
+      "offset_s": 120.0,
+      "Cmax": 0.1499384353218191,
+      "node": 0,
+      "xi": 0.0,
+      "r_m": 0.0,
+      "center_is_max": true
+    }
+  ],
+  "strict_check_time_s": 183937.23441390254,
+  "strict_check_Cmax": 0.14999948657707998,
+  "strict_check_margin": 5.074738513148025e-07,
+  "numerical_budget_evidence": {
+    "path": "validation\\results\\numerical_budget.json",
+    "sha256": "c23b46e1d3cafd23abee5ee72eeea996f7ab84da679baf41964ce1ae0fdcb570"
+  }
+}
