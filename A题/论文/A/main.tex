@@ -11,6 +11,7 @@
 \usepackage{fancyvrb}
 \usepackage{subcaption}
 \usepackage{tabularx}
+\usepackage{longtable}
 \usepackage{fancyhdr}
 \usepackage{titlesec}
 \usepackage{indentfirst}
@@ -176,145 +177,60 @@
 
 \section{模型假设}
 
-
-\begin{enumerate}
-\item 药材为长圆柱，长径比远大于 \(1\)，忽略两端端面的轴向效应，仅考虑半径方向的一维径向传热传质；
-\item 在预热平衡阶段（\(0\sim1800\mathrm{s}\)），药材半径固定为 \(2\mathrm{cm}\)，不随时间变化；
-\item 热物性参数取题目附录2给出的常数，不随温度和含水率变化；
-\item 水分扩散系数仅随含水率变化，不随温度变化；
-\item 温度场与水分场之间无直接双向耦合项，二者可分别求解；
-\item 不额外加入蒸发潜热和内部热湿耦合效应，这是题目未给出相变参数情况下的建模取舍。
+\begin{enumerate}[itemsep=0pt,parsep=0pt]
+\item \(4~\mathrm{h}\) 后的烘房温湿环境保持稳定，处于恒温干燥阶段；
+\item 同一时刻药材侧表面的烘房温湿环境均匀，换热与传质系数不随时间和位置变化；
+\item 第四问中，药材长度保持不变，各材料层沿径向同比例收缩，作为温湿计算的外部输入。
 \end{enumerate}
 
 
 \section{符号说明}
 
 
-
-\section{模型准备}
-
-\subsection{问题背景}
-
-中药材热风烘干是热量与水分同时向药材内部和外部传递的过程：热空气通过对流换热把热量传给药材表面，再依靠温度梯度向中心传导；表面水分向环境蒸发，内部水分在浓度梯度驱动下向表面扩散补充。由于药材内部同时存在温度梯度和水分浓度梯度，这是一个典型的传热与传质耦合问题。
-
-本文所研究的药材为圆柱形，长 \(25\mathrm{cm}\)、半径 \(2\mathrm{cm}\)，长径比达到 \(12.5\)，远大于 \(1\)。在烘干初期，两端端面的散热和失水面积与侧面相比很小，药材内部的温度和水分浓度沿半径方向的变化远大于沿轴向的变化。因此，本文将三维问题简化为以中心轴为对称轴的一维径向传热传质问题。
-
-\subsection{传热传质的基本方式}
-
-热量传递主要有三种方式：热传导、对流和辐射。本文研究的热量在药材内部主要靠热传导传递。傅里叶定律指出，单位时间内通过单位面积的热量，与温度沿传递方向的变化率成正比，方向从高温指向低温，即
-\begin{equation}
-q=-k\frac{\partial T}{\partial r},
-\end{equation}
-其中 \(q\) 为热流密度（\(\mathrm{W/m^2}\)），\(k\) 为导热系数（\(\mathrm{W/(m\cdot K)}\)），负号表示热量从高温流向低温。
-
-水分在药材内部的迁移规律与热传导类似，但驱动力为水分浓度梯度。菲克扩散定律指出，单位时间内通过单位面积的水分量，与水分浓度沿传递方向的变化率成正比，即
-\begin{equation}
-J=-D\frac{\partial C}{\partial r},
-\end{equation}
-其中 \(J\) 为水分通量，\(D\) 为水分扩散系数，\(C\) 为干基含水率。
-
-本文在预热平衡阶段（\(0\sim1800\mathrm{s}\)）中，题目给出的热物性均为常数，水分扩散系数仅随含水率变化，且温度场与水分场之间无直接双向耦合项，因此温度场与水分场可分开求解。后续问题中物性将随含水率变化、水分扩散系数同时依赖温度和含水率，温度场与水分场需要联立推进。
-
-\subsection{边界条件类型}
-
-导热问题常见边界条件有三类。令 \(T(r,t)\) 为温度分布函数，\(\Gamma\) 为边界曲面。
-
-第一类边界条件规定边界上的温度值：
-\begin{equation}
-T(r,t)\big|_{r\in\Gamma}=f(r,t).
-\end{equation}
-第二类边界条件规定边界上的热流密度：
-\begin{equation}
-\frac{\partial T}{\partial n}\bigg|_{r\in\Gamma}=f(r,t).
-\end{equation}
-第三类边界条件规定边界上物体与周围流体间的对流传热系数及周围流体温度：
-\begin{equation}
-\left(\frac{\partial T}{\partial n}+\sigma T\right)\bigg|_{r\in\Gamma}=f(r,t).
-\end{equation}
-本文药材表面与烘房热空气直接接触，热量和水分均通过表面进出，采用第三类边界条件（Robin 边界）。
-
-\subsection{几何简化与坐标建立}
-
-药材为长圆柱，半径 \(R=0.02~\mathrm{m}\)，长度 \(L=0.25~\mathrm{m}\)，端面面积与侧面积之比为
-\begin{equation}
-\frac{S_{\mathrm{ends}}}{S_R}=\frac{R}{L}=\frac{0.02}{0.25}=0.08.
-\end{equation}
-端面交换远小于侧面交换，故忽略轴向梯度和端面交换，仅考虑 \(0\le r\le R\) 的一维径向问题。
-
-建立以药材中心轴为对称轴、半径方向为 \(r\) 轴的径向坐标。热量沿半径方向由表面向中心传导，水分由内部向表面扩散。
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.95\textwidth]{fig1.png}
-\caption{圆柱形药材简化示意图}
-\label{fig:radial_simplification}
-\end{figure}
-
-如图~\ref{fig:radial_simplification} 所示，药材可视为长圆柱，热量沿半径方向由表面向中心传导，水分则由内部向表面扩散；由于长径比远大于 \(1\)，本文将三维圆柱问题简化为以中心轴为对称轴的一维径向问题。
-
-\subsection{各物理环节的传热传质方式}
-
-药材表面直接与烘房热空气接触，热量和水分均通过表面进出药材。
-
-热量方面，热空气通过对流换热将热量传给药材表面，边界条件为
-\begin{equation}
--k\frac{\partial T}{\partial r}\bigg|_{r=R}=h\left[T(R,t)-T_\infty(t)\right],
-\label{eq:bcT}
-\end{equation}
-其中 \(h\) 为对流换热系数，\(T_\infty(t)\) 为烘房空气温度。
-
-水分方面，药材表面的水分通过对流传质进入烘房空气，边界条件为
-\begin{equation}
--D(C_s)\frac{\partial C}{\partial r}\bigg|_{r=R}=h_m\left[C_s-C_e(t)\right],
-\label{eq:bcC}
-\end{equation}
-其中 \(h_m\) 为对流传质系数，\(C_s\) 为表面含水率，\(C_e(t)\) 为环境水分驱动量。由于题目未给出空气湿度与药材含水率之间的严格换算关系，本文将附件 1 给出的环境水分量直接作为表面传质的等效驱动量使用。
-
-初始时刻药材温度均匀为 \(28^\circ\mathrm{C}\)，含水率均匀为 \(2.55\mathrm{kg/kg}\)，即
-\begin{equation}
-T(r,0)=28,\qquad C(r,0)=2.55.
-\label{eq:ic}
-\end{equation}
-药材中心处由于几何对称，径向不存在净传递，取对称边界条件
-\begin{equation}
-\frac{\partial T}{\partial r}(0,t)=0,\qquad \frac{\partial C}{\partial r}(0,t)=0.
-\label{eq:sym}
-\end{equation}
-
-\subsection{符号说明}
-
-\begin{table}[H]
-\centering
-\caption{主要变量与符号}
-\label{tab:symbols}
-\begin{tabularx}{\textwidth}{|>{\centering\arraybackslash}p{3cm}|>{\centering\arraybackslash}X|>{\centering\arraybackslash}p{3.5cm}|}
-\hline
-\rowcolor{headcolor}
+\begingroup
+\renewcommand{\arraystretch}{1.05}
+\setlength{\LTleft}{\fill}
+\setlength{\LTright}{\fill}
+\setlength{\LTpre}{0pt}
+\setlength{\LTpost}{\medskipamount}
+\begin{longtable}{@{}
+  >{\centering\arraybackslash}p{\dimexpr0.23\textwidth-2\tabcolsep\relax}
+  >{\centering\arraybackslash}p{0.54\textwidth}
+  >{\centering\arraybackslash}p{\dimexpr0.23\textwidth-2\tabcolsep\relax}
+@{}}
+\toprule
 \textbf{符号} & \textbf{含义} & \textbf{单位} \\
-\hline
-\rowcolor{rowcolor1}
-\(r\)、\(t\) & 距圆柱轴线的距离、烘干时间 & m、s \\
-\hline
-\rowcolor{rowcolor2}
-\(T\)、\(T_K\) & 摄氏温度、绝对温度 & \(^\circ\mathrm{C}\)、K \\
-\hline
-\rowcolor{rowcolor1}
-\(C\) & 干基含水率 & kg/kg \\
-\hline
-\rowcolor{rowcolor2}
-\(\rho\)、\(c_p\) & 密度、比热容 & kg/m\(^3\)、J/(kg·K) \\
-\hline
-\rowcolor{rowcolor1}
-\(k\)、\(D\) & 导热系数、有效水分扩散系数 & W/(m·K)、m\(^2\)/s \\
-\hline
-\rowcolor{rowcolor2}
-\(h\)、\(h_m\) & 表面换热系数、有效传质系数 & W/(m\(^2\)·K)、m/s \\
-\hline
-\rowcolor{rowcolor1}
-\(T_\infty\)、\(C_e\) & 环境温度、有效环境水分驱动量 & \(^\circ\mathrm{C}\)、kg/kg \\
-\hline
-\end{tabularx}
-\end{table}
+\midrule
+\endfirsthead
+\toprule
+\endhead
+\midrule
+\endfoot
+\bottomrule
+\endlastfoot
+\(t\) & 烘干时间 & \(\mathrm{s}\) \\
+\(r\) & 距药材中心轴的径向距离 & \(\mathrm{m}\) \\
+\(R(t),\,L\) & 药材当前半径、长度 & \(\mathrm{m}\) \\
+\(\xi\) & 相对径向坐标，\(\xi=r/R(t)\) & — \\
+\(T(r,t),\,T_\infty(t)\) & 药材内部温度、烘房温度 & \({}^\circ\mathrm{C}\) \\
+\(C(r,t)\) & 药材内部干基含水率 & \(\mathrm{kg/kg}\) \\
+\(C_e(t)\) & 烘房水分浓度，作为表面传质的有效参照量 & \(\mathrm{kg/kg}\) \\
+\(\rho\) & 药材密度 & \(\mathrm{kg/m^3}\) \\
+\(c_p\) & 药材比热容 & \(\mathrm{J/(kg\cdot K)}\) \\
+\(B=\rho c_p\) & 药材体积热容 & \(\mathrm{J/(m^3\cdot K)}\) \\
+\(k\) & 导热系数 & \(\mathrm{W/(m\cdot K)}\) \\
+\(D\) & 水分扩散系数 & \(\mathrm{m^2/s}\) \\
+\(h\) & 对流换热系数 & \(\mathrm{W/(m^2\cdot K)}\) \\
+\(h_m\) & 对流传质系数 & \(\mathrm{m/s}\) \\
+\(\overline C(t),\,M(t)\) & 体积加权平均含水率、全域最大含水率 & \(\mathrm{kg/kg}\) \\
+\(C_{\mathrm{crit}}\) & 烘干达标的含水率阈值 & \(\mathrm{kg/kg}\) \\
+\(t_*\) & 全域含水率达到阈值的临界时间 & \(\mathrm{s}\) \\
+\end{longtable}
+\endgroup
+
+
+
+
 
 \section{问题一模型的建立与求解}
 
