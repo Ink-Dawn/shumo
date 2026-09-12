@@ -206,7 +206,7 @@
 \begin{enumerate}[itemsep=0pt,parsep=0pt]
 \item \(4~\mathrm{h}\) 后的烘房温湿环境保持稳定，处于恒温干燥阶段；
 \item 同一时刻药材侧表面的烘房温湿环境均匀，换热与传质系数不随时间和位置变化；
-\item 第四问中，药材长度保持不变，各材料层沿径向同比例收缩，作为温湿计算的外部输入。
+\item 第四问中，尽管药材可能发生长度变化，但长度仍远大于半径，长度变化不影响径向一维近似；假设各材料层沿径向同比例收缩，作为温湿计算的外部输入；
 \item 热过程仅考虑药材内部导热与表面对流换热，不单独计入蒸发潜热、水分迁移携焓及收缩形变功。
 \end{enumerate}
 
@@ -281,8 +281,7 @@
 
 \begin{figure}[H]
 \centering
-\qoneplaceholder{3.2cm}{圆柱整体与轴向中截面 \(\longrightarrow\) 径向微元\\
-标出 \(R,L,r,\mathrm{d}r\) 及热量、水分的传递方向}
+\includegraphics[width=0.95\textwidth]{figure2.pdf}
 \caption{药材研究截面及径向传递示意}
 \label{fig:q1-geometry}
 \end{figure}
@@ -312,11 +311,12 @@ D(C)=A_D\exp(-a/C),\qquad A_D=7\times10^{-9}~\mathrm{m^2/s},\quad a=0.89.
 \begin{equation}
 \left\{
 \begin{aligned}
-T(r,0)&=T_0=28~^\circ\mathrm{C},&
-C(r,0)&=C_0=2.55~\mathrm{kg/kg},\\
-T_r(0,t)&=0,& C_r(0,t)&=0,\\
--kT_r(R,t)&=h[T_s-T_\infty(t)],\\
--D(C_s)C_r(R,t)&=h_m[C_s-C_e(t)].
+T(r,0) &= T_0 = 28~^\circ\mathrm{C}, \\
+C(r,0) &= C_0 = 2.55~\mathrm{kg/kg}, \\
+T_r(0,t) &= 0, \\
+C_r(0,t) &= 0, \\
+-kT_r(R,t) &= h[T_s-T_\infty(t)], \\
+-D(C_s)C_r(R,t) &= h_m[C_s-C_e(t)].
 \end{aligned}
 \right.
 \label{eq:q1-conditions}
@@ -463,7 +463,7 @@ G_{i+1/2}=-S_{i+1/2}\frac{\Psi(C_{i+1})-\Psi(C_i)}{r_{i+1}-r_i}.
   \begin{figure}[H]
       \centering
       \includegraphics[width=0.65\textwidth]{figure3.pdf}
-      \caption{预热阶段温湿时空分布与末态中截面；圆形截面由径向解作轴对称映射得到}
+      \caption{预热阶段温湿时空分布}
       \label{fig:q1field}
   \end{figure}
 
@@ -483,7 +483,7 @@ G_{i+1/2}=-S_{i+1/2}\frac{\Psi(C_{i+1})-\Psi(C_i)}{r_{i+1}-r_i}.
 \label{tab:q1-checks}
 \small
 \renewcommand{\arraystretch}{1.05}
-\begin{tabularx}{\linewidth}{@{}lXr@{}}
+\begin{tabularx}{\linewidth}{@{}l>{\centering\arraybackslash}Xr@{}}
 \toprule
 检验项目 & 比较内容 & 结果 \\
 \midrule
@@ -509,15 +509,7 @@ G_{i+1/2}=-S_{i+1/2}\frac{\Psi(C_{i+1})-\Psi(C_i)}{r_{i+1}-r_i}.
  \le 1.08\times10^{-5}~^\circ\mathrm C,\qquad 0<t\le1800~\mathrm{s}.
 \label{eq:q1-end-bound}
 \end{equation}
-其中 \(\operatorname{erfc}\) 为余误差函数。这一上界与二维网格无关，结合对照结果，我们在第一问的时段内忽略端面对中截面的影响。图~\ref{fig:q1-endface} 中的差异主要集中在端部；计入端面交换后，\(1800~\mathrm{s}\) 的整根平均含水率较对照降低约 \(0.01860~\mathrm{kg/kg}\)。因此，上述简化仅用于本问中截面的径向分布，不能据此忽略整根平均状态或端部的变化。
-
-\begin{figure}[H]
-\centering
-\qoneplaceholder{3.0cm}{半圆柱纵截面位置条与端部局部放大\\[0.5em]
-温度、含水率的二维--同网格一维最大差分布}
-\caption{端面影响的空间分布；各点取 \(0:10:1800~\mathrm{s}\) 保存时刻上的最大绝对差}
-\label{fig:q1-endface}
-\end{figure}
+其中 \(\operatorname{erfc}\) 为余误差函数。
 
 \subsection{问题二模型的建立与求解}
 \label{sec:q2}
@@ -558,9 +550,9 @@ B(C)\frac{\partial T}{\partial t}
 \begin{equation}
 \left\{
 \begin{aligned}
-T(r,0)&=28~^\circ\mathrm C,&
+T(r,0)&=28~^\circ\mathrm C,\\
 C(r,0)&=2.55~\mathrm{kg/kg},\\
-T_r(0,t)&=0,&C_r(0,t)&=0,\\
+T_r(0,t)&=C_r(0,t)=0,\\
 -k(C_s)T_r(R,t)&=h[T_s-T_\infty(t)],\\
 -D(C_s,T_{K,s})C_r(R,t)&=h_m[C_s-C_e(t)].
 \end{aligned}
@@ -704,19 +696,20 @@ G_{i+1/2}
 
 \begin{table}[H]
 \centering
-\problemresultstyle
 \caption{第二问数值求解检验}
 \label{tab:q2-checks}
-\begin{tabularx}{\linewidth}{|>{\centering\arraybackslash}p{0.16\linewidth}|>{\centering\arraybackslash}X|>{\centering\arraybackslash}p{0.22\linewidth}|>{\centering\arraybackslash}p{0.22\linewidth}|}
-\hline
-检验项目 & 比较设置 & \shortstack{温度最大差\\（\(^\circ\mathrm C\)）} & \shortstack{含水率最大差\\（\(\mathrm{kg/kg}\)）} \\
-\hline
+\small
+\renewcommand{\arraystretch}{1.05}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\tabularxcolumn}[1]{m{#1}}
+\begin{tabularx}{\linewidth}{@{}c>{\centering\arraybackslash}Xcc@{}}
+\toprule
+\mbox{检验项目} & \mbox{比较设置} & \mbox{温度最大差（\(^\circ\mathrm C\)）} & \mbox{含水率最大差（\(\mathrm{kg/kg}\)）} \\
+\midrule
 网格加密 & \(2560\to3840\) 格 & \(4.362\times10^{-7}\) & \(1.887\times10^{-6}\) \\
-\hline
 时间加严 & 相对容差由 \(10^{-13}\) 收紧至 \(3\times10^{-14}\) & \(4.818\times10^{-11}\) & \(6.546\times10^{-12}\) \\
-\hline
 独立方法 & 有限体积与二次有限元 & \(4.956\times10^{-7}\) & \(3.409\times10^{-6}\) \\
-\hline
+\bottomrule
 \end{tabularx}
 \par\smallskip
 \begin{minipage}{\linewidth}
@@ -726,375 +719,278 @@ G_{i+1/2}
 
 有限体积与有限元的最大含水率差出现在 \(1~\mathrm s\) 的表面，说明核验需要覆盖初始快速变化阶段。题定的 \(60\) 项温度、含水率结果保留四位小数后，两种方法均一致。冻结组另用圆柱特征函数展开构造解析参照，在 \(6\) 个时刻、\(5\) 个半径处核对，温度和含水率最大差分别为 \(4.99\times10^{-6}~^\circ\mathrm C\)、\(4.04\times10^{-6}~\mathrm{kg/kg}\)，远小于前述冻结对照的含水率差异。这些检查支持所选方程的数值求解，模型对实际烘干过程的符合程度仍取决于物性关系、表面交换参数和径向近似的适用性。
 
-\section{问题三的建立与求解}
+\subsection{问题三模型的建立与求解}
+\label{sec:q3}
 
-\subsection{问题三的前提与建模范围}
+\subsubsection{模型的建立}
+\label{sec:q3-model}
 
-问题三沿用问题二建立的固定尺寸一维径向变物性热湿耦合模型，但把任务从“给定时间求状态”改为“给定阈值求时间”：已知含水率阈值 \(C_{\mathrm{crit}}=0.15~\mathrm{kg/kg}\) 和“各处达标”的要求，求全域最大含水率首次下降至阈值以下的临界时间。药材半径 \(R=0.02~\mathrm{m}\)、长度 \(L=0.25~\mathrm{m}\)，端面与侧面积之比仅 \(0.08\)，仍忽略轴向梯度和端面交换；问题三暂不加入收缩。初始状态取 \(T(r,0)=28~^\circ\mathrm{C}\)、\(C(r,0)=2.55~\mathrm{kg/kg}\)，从与问题二相同的初态重新计算，不承接问题二末态。
+问题三要求确定药材各处含水率均低于 \(0.15~\mathrm{kg/kg}\) 所需的时间。我们沿用问题二的变物性径向模型，即式~\eqref{eq:q2-properties}--\eqref{eq:q2-conditions}，保持半径 \(R=0.02~\mathrm m\)，从 \(T_0=28~^\circ\mathrm C\)、\(C_0=2.55~\mathrm{kg/kg}\) 的均匀初态开始计算。由于扩散系数仍随温度变化，求解过程中继续同时计算温度和含水率。
 
-与问题二相比，问题三新增两个难点：
+附件1只给出了前 \(4~\mathrm h\) 的环境记录，因而还需确定观测结束后的边界输入。末段温度与环境含水率已在 \(50~^\circ\mathrm C\) 和 \(0.05~\mathrm{kg/kg}\) 附近波动，我们取末段一段时间内的均值作为后续代表值。记观测结束时刻为 \(t_b=14400~\mathrm s\)，将观测值分段线性插值得到 \(T_{\mathrm{obs}}(t)\)、\(C_{e,\mathrm{obs}}(t)\)。对长度为 \(w\) 的末段窗口，计算
+\begin{equation}
+\overline T_{\infty,w}=\frac{1}{w}\int_{t_b-w}^{t_b}T_{\mathrm{obs}}(s)\,\mathrm ds,
+\qquad
+\overline C_{e,w}=\frac{1}{w}\int_{t_b-w}^{t_b}C_{e,\mathrm{obs}}(s)\,\mathrm ds.
+\label{eq:q3-platform}
+\end{equation}
+基准取 \(w=3600~\mathrm s\)，即末 \(60~\mathrm{min}\) 的时间均值，记为 S60 方案。由此得到长期温度与环境含水率分别为 \(49.9959~^\circ\mathrm C\)、\(0.0499904~\mathrm{kg/kg}\)。前 \(4~\mathrm h\) 仍采用观测插值，此后令环境保持在这两个值上；切换时药材内部状态保持连续。这一延拓属于长期环境假设，其取法和水平变化对结果的影响将在第~\ref{sec:q3-sensitivity}~节考察。
 
-\begin{itemize}
-\item 附件 1 只覆盖 \(0\sim14400~\mathrm{s}\)（4 h），而烘干时间通常远超 4 h，需要建立 4 h 以后的长期环境假设；
-\item 结束时刻未知，需要在全部计算网格上监测最大含水率，定位下降穿越，并把场误差换算为时间误差。
-\end{itemize}
+取含水率阈值 \(C_{\mathrm{crit}}=0.15~\mathrm{kg/kg}\)。药材各处同时达标，要求含水率的全域最大值低于这一阈值，因此定义
+\begin{equation}
+M(t)=\max_{0\le r\le R}C(r,t),\qquad
+t_*=\inf\{t\ge0:M(t)<C_{\mathrm{crit}}\}.
+\label{eq:q3-event}
+\end{equation}
+对于连续下降穿越阈值的过程，临界时刻满足 \(M(t_*)=C_{\mathrm{crit}}\)，随后才进入严格达标状态。数值计算据此先定位下降交点，再由交点处的状态继续积分，检查最大含水率是否确已低于阈值。
 
-表~\ref{tab:q2q3} 给出问题二与问题三的核心区别。
+\subsubsection{模型的求解}
+\label{sec:q3-solution}
 
+我们沿用前两问的环层有限体积离散、非线性水分通量和自适应 BDF 积分。经第~\ref{sec:q3-checks}~节检验，取 \(N=640\)，相对容差为 \(10^{-10}\)，温度与含水率的绝对容差分别为 \(10^{-11}\)、\(10^{-12}\)。前 \(4~\mathrm h\) 在各环境观测折点处分段，最大步长取 \(10~\mathrm s\)；进入恒定环境后，最大步长取 \(150~\mathrm s\)，每 \(6~\mathrm h\) 保存状态并继续下一段积分。各段均沿用上一段的末态及原时间坐标。
+
+与前两问给定结束时刻不同，本问需在积分过程中判断何时停止。令 \(g(t)=M(t)-C_{\mathrm{crit}}\)，我们按时间顺序寻找它首次下降变号的区间，再定位并检查临界事件。具体步骤如下，流程见图~\ref{fig:q3-algorithm}。
+
+% 左侧为算法说明；右侧流程图由作者绘制，当前保留占位符。
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.55\linewidth}
+\vspace{0pt}
+\small
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0pt}
+\hrule height 0.7pt
+\vspace{2pt}
+\hrule height 0.4pt
+\vspace{5pt}
+
+\textbf{\textit{STEP1} 设置初态与环境：}
+生成径向网格，将题定初温、初始含水率赋给各节点。从 \(t=0\) 开始，前 \(4~\mathrm h\) 使用观测插值，此后使用 S60 平台。
+
+\textbf{\textit{STEP2} 推进并检查全域：}
+按当前环境完成一个 BDF 接受步。在步内四分点及端点，分别对全部 \(641\) 个节点求最大含水率，记录 \(g(t)\) 及最大值的位置。
+
+\textbf{\textit{STEP3} 判断是否穿越阈值：}
+按时间顺序查找 \(g\) 由非负变为负的首个区间。若未找到，返回 \textit{STEP2}；若积分至上限 \(120~\mathrm h\) 仍未穿越，记录未达标并结束。
+
+\textbf{\textit{STEP4} 定位临界时间：}
+在找到的区间内，用 Brent 法求连续数值解上的 \(g(t)=0\)，得到 \(t_*\)，并保存该时刻的完整状态。
+
+\textbf{\textit{STEP5} 核验穿越并输出：}
+由临界状态继续积分 \(10~\mathrm s\)，检查临界前、后含水率是否分别高于、低于阈值。通过后输出临界时间与对应状态；未通过则停止并报告检查失败。
+
+\vspace{5pt}
+\hrule height 0.4pt
+\vspace{2pt}
+\hrule height 0.7pt
+\end{minipage}\hfill
+\begin{minipage}[t]{0.42\linewidth}
+\vspace{0pt}
+\qoneplaceholder{8.0cm}{全域首次达标的事件定位流程\\[0.8em]
+与左侧 \textit{STEP1}--\textit{STEP5} 对应\\[0.8em]
+标出全节点最大值检查、首次变号区间、求根及前后核验\\[0.8em]
+保留未穿越时的循环，以及达到上限未达标、核验失败的分支}
+\caption{全域首次达标时间的计算流程}
+\label{fig:q3-algorithm}
+\end{minipage}
+\end{figure}
+
+得到临界时间后，按每隔 \(6~\mathrm h\)、半径间隔 \(0.5~\mathrm{cm}\) 提取正文结果；再按每隔 \(60~\mathrm s\)、半径间隔 \(0.1~\mathrm{cm}\) 输出至 \texttt{result3.xlsx}，并追加临界时刻一行。\(60~\mathrm s\) 仅为保存间隔，事件定位使用积分过程中的未舍入状态。
+
+\subsubsection{结果与分析}
+\label{sec:q3-results}
+
+采用固定半径、附录3物性及 S60 长期环境，得到全域达标的临界时间为 \(\boldsymbol{57.4796~\mathrm h}\)，约为 \(2.3950\) 天。规定时刻、位置的含水率列于表~\ref{tab:q3C}，临界时刻的最大值位于中心。
+
+% 题定表来自问题三/outputs/q3/tables/table5.csv，正式基准 strict_640。
 \begin{table}[H]
 \centering
-\caption{问题二与问题三的核心区别}
-\label{tab:q2q3}
-\begin{tabularx}{\textwidth}{|>{\centering\arraybackslash}p{3cm}|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|}
+\problemresultstyle
+\caption{药材烘干过程的含水率（\(\mathrm{kg/kg}\)）}
+\label{tab:q3C}
+\begin{tabularx}{\linewidth}{|>{\centering\arraybackslash}p{\dimexpr0.25\linewidth-2\tabcolsep-\arrayrulewidth\relax}|*{5}{>{\centering\arraybackslash}X|}}
+\problemresultheader{h}
+6.0000 & 1.0170 & 0.9882 & 0.9015 & 0.7550 & 0.5328 \\
 \hline
-\rowcolor{headcolor}
-\textbf{比较项} & \textbf{问题二} & \textbf{问题三} \\
+12.0000 & 0.4562 & 0.4432 & 0.4031 & 0.3298 & 0.1642 \\
 \hline
-\rowcolor{rowcolor1}
-任务 & 给定时间，求温度与含水率场 & 给定阈值，求全域首次达标时间 \\
+18.0000 & 0.2989 & 0.2916 & 0.2687 & 0.2253 & 0.0845 \\
 \hline
-\rowcolor{rowcolor2}
-输出 & 温度与含水率时空分布 & 烘干时间与含水率场 \\
+24.0000 & 0.2378 & 0.2328 & 0.2167 & 0.1856 & 0.0665 \\
 \hline
-\rowcolor{rowcolor1}
-环境范围 & 附件 1 覆盖 \(0\sim3~\mathrm{h}\) & 附件 1 覆盖 \(0\sim4~\mathrm{h}\)，之后需长期假设 \\
+30.0000 & 0.2058 & 0.2019 & 0.1892 & 0.1641 & 0.0598 \\
 \hline
-\rowcolor{rowcolor2}
-结束条件 & 固定 \(3~\mathrm{h}\) & 全域最大含水率首次低于 \(0.15~\mathrm{kg/kg}\) \\
+36.0000 & 0.1859 & 0.1825 & 0.1718 & 0.1504 & 0.0566 \\
 \hline
-\rowcolor{rowcolor1}
-新增难点 & 变物性耦合 & 长期环境、事件定位、时间误差 \\
+42.0000 & 0.1721 & 0.1691 & 0.1597 & 0.1407 & 0.0548 \\
+\hline
+48.0000 & 0.1618 & 0.1592 & 0.1507 & 0.1334 & 0.0537 \\
+\hline
+54.0000 & 0.1539 & 0.1515 & 0.1436 & 0.1277 & 0.0530 \\
+\hline
+57.4796 & 0.1500 & 0.1477 & 0.1402 & 0.1249 & 0.0526 \\
 \hline
 \end{tabularx}
+\par\smallskip
+\begin{minipage}{\linewidth}
+\small 注：末行为全域最大含水率刚达到阈值的临界状态，根后的严格达标检查见第~\ref{sec:q3-checks}~节；表中数据统一显示四位小数。
+\end{minipage}
 \end{table}
 
-\subsection{模型建立}
+\noindent\textbf{（1）各位置的达标次序。}
+为比较不同位置的等待时间，我们从未舍入的含水率历程中提取各处首次下降至 \(C_{\mathrm{crit}}\) 的时刻，记为 \(\tau(r)\)。所检查的各时刻含水率沿半径向外不增，中心值与全域最大值在数值误差内一致。对保存的 \(60~\mathrm s\) 历程作时间插值，表面约在 \(12.55~\mathrm h\) 达标，距中心 \(1~\mathrm{cm}\) 处约需 \(48.53~\mathrm h\)，中心则需 \(57.48~\mathrm h\)。
 
-\subsubsection{物性随含水率与温度变化}
-
-问题三完全继承问题二的物性公式，直接使用题目附录 3，不重新拟合：
-\begin{align}
-\rho(C) &= 650+128C,\\
-c_p(C) &= 1450+2736\frac{C}{C+1},\\
-k(C) &= 0.21+0.38\frac{C}{C+1},\\
-B(C) &= \rho(C)c_p(C),\\
-D(C,T_K) &= 2.4\times10^{-3}\exp\!\left(-\frac{0.45}{C}\right)\exp\!\left(-\frac{3850}{T_K}\right).
-\end{align}
-其中 \(B\) 为体积热容，单位 \(\mathrm{J/(m^3\cdot K)}\)。编程时每次根据当前 \(C\)、\(T\) 计算，不能在初始时刻算一次后全程固定。
-
-\subsubsection{温度方程}
-
-温度场满足
+为考察平均含水率达标时仍有多少区域超标，我们按圆柱体积计算超出阈值的比例：
 \begin{equation}
-B(C)\frac{\partial T}{\partial t}=\frac{1}{r}\frac{\partial}{\partial r}\left[rk(C)\frac{\partial T}{\partial r}\right].
-\label{eq:q3heat}
+f_{\mathrm{wet}}(t)=\frac{2}{R^2}\int_0^R
+\mathbf 1_{\{C(r,t)>C_{\mathrm{crit}}\}}\,r\,\mathrm dr.
+\label{eq:q3-wet-fraction}
 \end{equation}
-左边是单位体积的瞬时储热率，右边是附近热量流入与流出的差。热流密度为
+其中指示函数在含水率超标处取1，其余取0。截面平均含水率按式~\eqref{eq:q2-mean} 计算；超标区域的边界由径向含水率作保形插值后确定，再按上式积分。平均含水率约在 \(36.03~\mathrm h\) 降至 \(0.15~\mathrm{kg/kg}\)，此时中心值仍为 \(0.1858~\mathrm{kg/kg}\)，约 \(56.66\%\) 的体积尚未达标。因此，按平均含水率结束会提前约 \(21.45~\mathrm h\)，并会留下超过一半体积的未达标区域。
+
+\noindent\textbf{（2）末期耗时及其原因。}
+由表中数值可见，中心含水率前 \(18~\mathrm h\) 已降至 \(0.3~\mathrm{kg/kg}\) 以下，此后下降幅度减小，却仍需较长时间才能达标。为同时比较最湿位置的含水率降幅与耗时，我们定义达阈进度
 \begin{equation}
-q_r^T=-k(C)\frac{\partial T}{\partial r},
+P(t)=\frac{C_0-M(t)}{C_0-C_{\mathrm{crit}}}.
+\label{eq:q3-progress}
 \end{equation}
-向外为正。变导热系数必须留在导数里面，不能直接套用常系数的 \(k\) 乘拉普拉斯算子。本文实现仍用通量形式，让相邻圆环交换自动一致。
+\(P=0\) 对应初态，\(P=1\) 对应全域最大含水率达到阈值。本次计算中最湿位置在中心，故该指标也表示中心完成目标降幅的比例。将局部达标时间 \(\tau(r)\) 和 \(P\) 随归一化时间 \(t/t_*\) 的变化绘于图~\ref{fig:q3-completion}，分别比较空间达标次序和时间分配。
 
-\subsubsection{含水率方程}
+% 图由作者绘制。局部到达时间、未达标体积分数及进度由 strict_640
+% 的未舍入原始场后处理得到；该进度并非整根药材排出水分的质量比例。
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.65\textwidth]{figure8.pdf}
+\caption{各位置的达标次序与最湿位置的达阈进度}
+\label{fig:q3-completion}
+\end{figure}
 
-含水率场满足
+最湿位置完成目标降幅的 \(95\%\) 时，含水率为 \(0.27~\mathrm{kg/kg}\)，所需时间约为 \(t_{95}=20.28~\mathrm h\)。余下 \(5\%\) 的降幅仍需 \(37.20~\mathrm h\)，占总时长的 \(64.71\%\)。以下将 \(t_{\mathrm{late}}=t_*-t_{95}\) 记为最湿位置含水率由 \(0.27\) 降至 \(0.15~\mathrm{kg/kg}\) 的耗时，用它考察环境与传质参数的影响。
+
+为了说明整体失水速度如何变化，我们将水分方程乘以 \(2r/R^2\) 并沿半径积分。轴心通量为零，再代入表面条件，得到
 \begin{equation}
-\frac{\partial C}{\partial t}=\frac{1}{r}\frac{\partial}{\partial r}\left[rD(C,T_K)\frac{\partial C}{\partial r}\right].
-\label{eq:q3moisture}
+-\frac{\mathrm d\overline C}{\mathrm dt}
+=-\frac{2}{R}D(C_s,T_{K,s})C_r(R,t)
+=\frac{2h_m}{R}[C_s-C_e(t)].
+\label{eq:q3-mean-rate}
 \end{equation}
-含水率改变热容和导热能力，进而影响温度；温度改变扩散能力，进而影响含水率。但这种耦合来自物性更新，不能直接解释为已经包含蒸发潜热等全部热湿机制。
+随着表面含水率接近环境值，\(C_s-C_e\) 减小，平均含水率的下降速度也随之减小。基准计算中，该速度在 \(6~\mathrm h\) 时约为 \(0.1390~\mathrm{kg/(kg\cdot h)}\)，到临界附近降至 \(7.658\times10^{-4}~\mathrm{kg/(kg\cdot h)}\)。
 
-\subsubsection{边界条件与初始条件}
+水分从内部补给表面的过程也随含水率变化。后期温度已接近 \(50~^\circ\mathrm C\)，继续失水使式~\eqref{eq:q2-properties} 中的 \(\exp(-0.45/C)\) 减小。临界时刻，中心与表面的扩散系数分别约为 \(8.00\times10^{-10}\)、\(3.12\times10^{-12}~\mathrm{m^2/s}\)。较干外层的扩散能力明显较低，所以解释末期耗时时，还需同时考虑内部水分向表面的传递。扩散系数决定给定梯度下的通量，实际通量则随含水率梯度与表面状态共同变化。
 
-初始条件为
+\subsubsection{模型检验}
+\label{sec:q3-checks}
+
+末期含水率曲线较平缓，较小的场值误差也可能引起达标时间的偏移。因此，我们直接比较临界时间随网格、容差及积分方式的变化。临界附近控制位置保持在中心，且 \(M'(t_*)\ne0\)，由一阶展开可得
 \begin{equation}
-T(r,0)=28~^\circ\mathrm{C},\qquad C(r,0)=2.55~\mathrm{kg/kg}.
+|\delta t_*|\approx\frac{|\delta M|}{|M'(t_*)|}.
+\label{eq:q3-time-error}
 \end{equation}
-圆心对称边界为
-\begin{equation}
-\frac{\partial T}{\partial r}(0,t)=0,\qquad \frac{\partial C}{\partial r}(0,t)=0.
-\end{equation}
-表面为 Robin 边界：
-\begin{equation}
--k(C)\frac{\partial T}{\partial r}\bigg|_{r=R}=h\left[T(R,t)-T_\infty(t)\right],
-\end{equation}
-\begin{equation}
--D(C,T_K)\frac{\partial C}{\partial r}\bigg|_{r=R}=h_m\left[C(R,t)-C_e(t)\right].
-\end{equation}
-其中 \(h=25~\mathrm{W/(m^2\cdot K)}\)，\(h_m=8\times10^{-7}~\mathrm{m/s}\)，沿用问题二数值，作为模型延续假设。
+这里 \(\delta M\) 为临界附近最大含水率的误差，\(\delta t_*\) 为相应时间偏差。计算得到 \(|M'(t_*)|\approx2.9124\times10^{-7}~\mathrm{kg/(kg\cdot s)}\)，可据此将场值差异与时间变化联系起来。各类直接比较列于表~\ref{tab:q3-checks}。
 
-\subsubsection{长期环境假设}
-
-附件 1 实际覆盖 \(0\sim14400~\mathrm{s}\)（4 h）。为建立 4 h 以后的长期环境边界，先对末段数据作平台判断。定义窗口均值
-\begin{equation}
-\overline{g}_w=\frac{1}{W}\int_{t_s-w}^{t_s}g(t)\,\mathrm{d}t,\qquad t_s=14400~\mathrm{s},
-\end{equation}
-其中 \(g\) 分别取环境温度或环境水分驱动量，\(W\) 为窗口长度。基准 S60 取最后 \(60~\mathrm{min}\) 时间平均，得环境温度约 \(49.9959~^\circ\mathrm{C}\)，环境水分驱动量约 \(0.0499904~\mathrm{kg/kg}\)。正式程序从附件自动计算并保留完整精度。
-
-0 至 4 h 使用附件 1 的分段线性环境；4 h 后使用 S60 平台代表值：
-\begin{equation}
-t>t_b:\quad T_\infty(t)=T_\infty^*,\qquad C_e(t)=C_e^*,
-\end{equation}
-其中 \(t_b=14400~\mathrm{s}\)。边界变化在 4 h 处分段处理，状态温度和含水率保持连续。附件末点为 \(50.165~^\circ\mathrm{C}\) 和 \(0.04986~\mathrm{kg/kg}\)，切到 S60 后边界温度改变 \(-0.169083~^\circ\mathrm{C}\)，环境水分量改变 \(+0.00013042~\mathrm{kg/kg}\)。这是边界定义造成的小跳变，不自动意味着程序错误。
-
-\subsubsection{全域达标判据与临界时间}
-
-定义全域最大含水率
-\begin{equation}
-C_{\max}(t)=\max_{0\le r\le R}C(r,t).
-\end{equation}
-最大含水率回答“最湿的位置是否已经达标”。每次事件调用在全部内部计算节点上取最大值，并记录最大值所在位置；不能只使用 Excel 的 21 个输出点。
-
-烘干结束时间定义为
-\begin{equation}
-t_{\mathrm{dry}}=\inf\left\{t>0:\;C_{\max}(t)<C_{\mathrm{crit}}\right\},\qquad C_{\mathrm{crit}}=0.15.
-\end{equation}
-这里求严格达标集合的下确界。数值上用等于阈值的事件定位临界时间，并短时继续积分核验下降穿越。若只有接触而未进入严格达标区间，不能按完成处理。所有判断使用未舍入数据。
-
-题目要求“各处”达标，因此真正控制条件是最大值，不能用体积平均含水率代替。平均值可能已低于 0.15，但中心仍高于 0.15。
-
-\subsection{模型求解}
-
-\subsubsection{空间离散：圆环有限体积法}
-
-采用与问题二相同的有限体积法，将半径 \(0\le r\le R\) 划分为 \(N\) 个区间，节点数 \(N+1\)。节点、界面、体积和面积分别为
-\begin{equation}
-r_0=0,\quad r_N=R,\quad r_{i+1/2}=\frac{r_i+r_{i+1}}{2},
-\end{equation}
-\begin{equation}
-V_i=\pi L\left(r_{i+1/2}^2-r_{i-1/2}^2\right),\qquad S_{i+1/2}=2\pi Lr_{i+1/2}.
-\end{equation}
-最外层和圆心都有自己的控制体。为提升表面附近早期分辨率，采用 sinh 网格：
-\begin{equation}
-x_i=\frac{i}{N},\qquad r_i=R\left[1-\frac{\sinh(\beta(1-x_i))}{\sinh\beta}\right],
-\end{equation}
-取 \(\beta=2.5\)。网格收敛比较时固定映射和 \(\beta\)，仅改变 \(N\)。
-
-\subsubsection{热通量}
-
-相邻节点之间采用调和平均导热系数：
-\begin{equation}
-k_{i+1/2}=\frac{2k_ik_{i+1}}{k_i+k_{i+1}}.
-\end{equation}
-界面热流为
-\begin{equation}
-F_{i+1/2}^T=-S_{i+1/2}k_{i+1/2}\frac{T_{i+1}-T_i}{r_{i+1}-r_i}.
-\end{equation}
-所有控制面统一规定向外为正。温度更新为
-\begin{equation}
-\frac{\mathrm{d}T_i}{\mathrm{d}t}=\frac{F_{i-1/2}^T-F_{i+1/2}^T}{B(C_i)V_i}.
-\end{equation}
-圆心内侧通量为零，表面通量为
-\begin{equation}
-F_{N+1/2}^T=S_Rh\left[T_N-T_\infty(t)\right].
-\end{equation}
-
-\subsubsection{水分通量：非线性势差}
-
-将扩散系数拆成温度因子和含水率因子：
-\begin{equation}
-A(T_K)=2.4\times10^{-3}e^{-3850/T_K},\qquad f(C)=e^{-0.45/C}.
-\end{equation}
-定义势函数
-\begin{equation}
-\Phi(C)=\int_0^Cf(z)\,\mathrm{d}z.
-\end{equation}
-界面水分通量为
-\begin{equation}
-F_{i+1/2}^C=-S_{i+1/2}A(T_{K,i+1/2})\frac{\Delta\Phi_{i+1/2}}{r_{i+1}-r_i},
-\end{equation}
-\begin{equation}
-\Delta\Phi_{i+1/2}=\int_{C_i}^{C_{i+1}}e^{-0.45/z}\,\mathrm{d}z.
-\end{equation}
-用 5 点 Gauss 求积计算该积分，并与 3 点、8 点结果比较。含水率更新为
-\begin{equation}
-\frac{\mathrm{d}C_i}{\mathrm{d}t}=\frac{F_{i-1/2}^C-F_{i+1/2}^C}{V_i}.
-\end{equation}
-
-\subsubsection{时间推进：自适应隐式 BDF}
-
-空间离散后，每个节点有两个未知量，原偏微分方程变成一组常微分方程
-\begin{equation}
-\frac{\mathrm{d}y}{\mathrm{d}t}=f(t,y),\qquad y=[T_0,C_0,T_1,C_1,\dots]^\mathsf{T}.
-\end{equation}
-采用 SciPy 的 BDF 自适应求解器。0 至 4 h 在观测折点处分段；4 h 后基准环境恒定，可试验分钟级最大步长，但是否放宽必须由时间收敛与事件检查确认。切换初期和事件附近允许自适应缩步。
-
-\subsubsection{事件定位}
-
-从初始时刻开始设置下降穿越事件
-\begin{equation}
-g_N(t)=C_{\max,N}(t)-C_{\mathrm{crit}},
-\end{equation}
-direction \(=-1\)，正式事件发生后可终止主积分。对每个分段保存开始、结束状态及事件信息，找到第一个有证据支持的变号区间，再在该区间定位根。
-
-主积分在事件处终止后，应从事件状态短时继续真实积分，并关闭终止标志以获取后验状态。日志保存首次变号区间、根时间、前后状态、各自配置及误差尺度。
-
-\subsubsection{数值验证}
-
-问题三的校验体系包括：
-
-\begin{itemize}
-\item V0 问题二回归：相同物理模型下前 3 h 状态在规定误差内一致；
-\item V1 低含水率通量与制造解：覆盖较干表层和完整非线性实现；
-\item V2 空间收敛：临界时间与事件附近场随网格加密稳定；
-\item V3 时间与步长收敛：长时积分误差小于分配的时间预算；
-\item V4 BDF 与 Radau 交叉一致；
-\item V5 首次事件与短时后验：完整历程支持首次下降穿越；
-\item V6 全域与中心检查：中心控制结论有多网格数值证据；
-\item V7 有效含水率积分平衡：时间累计收支在误差内闭合；
-\item V8 重启一致性：重启带来的额外差异在预算内；
-\item V9 窗口与长期偏移情景：量化所研究范围内环境假设的影响。
-\end{itemize}
-
-\subsection{结果分析}
-
-\subsubsection{题目指定结果}
-
-根据上述模型和求解方法，计算得到每 \(6~\mathrm{h}\)、距药材中心 \(0\)、\(0.5\)、\(1\)、\(1.5\)、\(2~\mathrm{cm}\) 处的含水率，以及烘干结束时间，列入表~\ref{tab:q3C}。完整结果（每隔 \(60~\mathrm{s}\)、径向 \(21\) 个输出半径）保存至 \texttt{result3.xlsx}。
-
+% 数据来自问题三/outputs/q3/validation/convergence.json。
 \begin{table}[H]
 \centering
-\caption{药材烘干过程的水分浓度}
-\begin{tabularx}{\textwidth}{|>{\centering\arraybackslash}p{2.5cm}|*{5}{>{\centering\arraybackslash}X|}}
-\hline
-\multirow{2}{*}{时间/h} & \multicolumn{5}{c|}{到药材中心的距离/cm} \\
-\cline{2-6}
- & 0 & 0.5 & 1 & 1.5 & 2 \\
-\hline
-6  &  &  &  &  &  \\
-\hline
-12 &  &  &  &  &  \\
-\hline
-18 &  &  &  &  &  \\
-\hline
-$\vdots$ &  &  &  &  &  \\
-\hline
-烘干结束时间 &  &  &  &  &  \\
-\hline
+\caption{第三问临界时间的数值检验}
+\label{tab:q3-checks}
+\small
+\renewcommand{\arraystretch}{1.05}
+\begin{tabularx}{\linewidth}{@{}l>{\centering\arraybackslash}Xr@{}}
+\toprule
+检验项目 & 比较设置 & 时间差绝对值/s \\
+\midrule
+空间加密 & \(320\to640\) 个径向区间 & \(5.9172\times10^{-2}\) \\
+空间加密 & \(640\to1280\) 个径向区间 & \(1.5003\times10^{-2}\) \\
+时间对照 & 容差、步长及 BDF/Radau 对照的最大差 & \(7.4847\times10^{-3}\) \\
+分段方式 & \(4~\mathrm h\) 后连续积分与每 \(6~\mathrm h\) 重启 & \(1.0393\times10^{-3}\) \\
+\bottomrule
 \end{tabularx}
+\par\smallskip
+\begin{minipage}{\linewidth}
+\small 注：每组比较保持物性、初态和环境一致；空间加密固定严格时间设置，时间与分段方式对照在相同空间网格上进行。
+\end{minipage}
 \end{table}
 
+网格加密的时间差约按四倍缩小，观测阶为 \(1.9797\)。结合正式网格的 Richardson 估计、时间对照及求根等误差来源，得到综合时间误差的工程估计约为 \(0.0286~\mathrm s\)。这一数值衡量所选方程的求解误差，实际预测还取决于物性关系及长期环境假设。
 
-\subsubsection{全域达标过程}
+临界前 \(10~\mathrm s\)，最大含水率比阈值高约 \(2.9126\times10^{-6}~\mathrm{kg/kg}\)；从临界状态继续积分 \(10~\mathrm s\) 后，则低约 \(2.9123\times10^{-6}~\mathrm{kg/kg}\)。此前接受步及步内检查点均未发现更早的穿越，临界状态的径向保形重构也未出现高于中心的值。这些检查支持所报告的首次下降事件。
 
-图~\ref{fig:q3dry} 给出全域最大含水率、中心含水率、表面含水率、体积平均含水率随时间的曲线，并叠加 \(0.15~\mathrm{kg/kg}\) 阈值线和临界时间竖线。该图用于说明何时全部达标，以及平均值为什么不能代替停止条件。
+我们还对 \(0.05\)--\(0.15~\mathrm{kg/kg}\) 的低含水率区间作非线性制造解检验。网格由32加密至128个区间，含水率最大误差由 \(1.16\times10^{-6}\) 降至 \(8.78\times10^{-8}~\mathrm{kg/kg}\)。基准过程的含水率体积积分与累计表面通量之间，最大相对平衡残差为 \(1.59\times10^{-10}\)，说明长时计算中的离散收支保持一致。上述检验针对径向模型；第一问的端面对照覆盖前 \(1800~\mathrm s\)，长期端面影响仍需另行检验。
 
-\begin{figure}[H]
+\subsubsection{灵敏度与稳健性分析}
+\label{sec:q3-sensitivity}
+
+前述 \(57.4796~\mathrm h\) 是在 S60 环境下得到的。附件未给出后续观测，我们改变平台的取法和长期水平，考察所需时间会有多大变化。各情景前 \(4~\mathrm h\) 的环境与初始条件均保持一致。
+
+\noindent\textbf{（1）长期平台取法的影响。}
+分别按式~\eqref{eq:q3-platform} 取末30、90分钟的时间均值，记为 S30、S90；另取最后一个观测值恒定延拓，记为 S0。相对 S60，S30 和 S90 的临界时间分别减少约 \(1.47\)、\(0.79~\mathrm{min}\)，S0 减少约 \(18.61~\mathrm{min}\)。末段平均窗口的改变对预测时间影响较小，直接采用单个末值则带来更大的偏移。该比较支持末段均值作为代表值，但未来环境是否维持这一水平，还需单独考察。
+
+\noindent\textbf{（2）长期环境水平的影响。}
+以 S60 为基准，仅将 \(4~\mathrm h\) 后的温度降低、提高 \(1~^\circ\mathrm C\)，或将环境含水率降低、提高 \(0.005~\mathrm{kg/kg}\)。这些幅度用于构造单因素比较情景。温度降低、提高时，临界时间分别为 \(59.3471\)、\(55.6937~\mathrm h\)，比基准增加 \(1.87~\mathrm h\)、减少 \(1.79~\mathrm h\)。环境含水率降低、提高时，临界时间分别为 \(57.3883\)、\(57.5897~\mathrm h\)，对应减少 \(5.48~\mathrm{min}\)、增加 \(6.61~\mathrm{min}\)。
+
+温度变化会通过扩散系数影响水分传递。在 \(50~^\circ\mathrm C\) 附近，由式~\eqref{eq:q2-properties} 可得 \(\partial\ln D/\partial T=3850/T_K^2\approx0.0369~\mathrm{K^{-1}}\)，因而提高温度会增大给定含水率下的扩散系数。环境含水率则直接改变表面驱动力，较低的 \(C_e\) 有利于水分向外排出。两类变化与所算时长的增减方向一致。
+
+为比较时间变化发生在哪个阶段，我们同时提取各情景的 \(t_{95}\)。温度降低、提高 \(1~^\circ\mathrm C\) 时，末期耗时分别约为 \(38.59\)、\(35.86~\mathrm h\)，相对基准变化约 \(+1.40\)、\(-1.34~\mathrm h\)。两种温度偏移造成的总时间变化中，约 \(75\%\) 来自这一末期区间。四个环境水平偏移情景下，最后 \(5\%\) 目标降幅所占的时间比例仍为 \(64.4\%\)--\(65.0\%\)，临界事件也均由中心控制。
+
+\noindent\textbf{（3）内部扩散与表面传质的长期灵敏度。}
+
+末期失水速度同时受到内部水分迁移和表面排出的影响。为区分二者的作用，我们分别将 \(h_m\) 减小、增大 \(10\%\)，或令 \(D_\gamma(C,T_K)=\gamma_D D(C,T_K)\)，取整体倍率 \(\gamma_D=0.9,1.1\)。其余条件保持为 S60 基准，所有组均从相同初态重新计算至全域达标，结果列于表~\ref{tab:q3-transfer}。
+
+% 数据来自问题三/长期传质灵敏度/runs/summary.csv。
+% 该补充实验的 t_95 和 t_* 均由全域最大含水率的下降事件定位。
+\begin{table}[H]
 \centering
-% \includegraphics[width=0.85\textwidth]{fig_q3_dry.png}
-\caption{全域达标过程。最大、中心、表面、体积平均含水率随时间变化，虚线为阈值，竖线为临界时间。}
-\label{fig:q3dry}
-\end{figure}
+\problemresultstyle
+\caption{内部扩散与表面传质的长期灵敏度}
+\label{tab:q3-transfer}
+\begin{tabularx}{\linewidth}{|*{4}{>{\centering\arraybackslash}X|}}
+\hline
+情景 & 总时长/h & 总时长变化/\% & 末期耗时/h \\
+\hline
+基准 & 57.4796 & 0.0000 & 37.1957 \\
+\hline
+\(h_m\times0.9\) & 58.2154 & \(+1.2802\) & 37.2102 \\
+\hline
+\(h_m\times1.1\) & 56.9023 & \(-1.0044\) & 37.1859 \\
+\hline
+\(D\times0.9\) & 63.1384 & \(+9.8449\) & 41.3167 \\
+\hline
+\(D\times1.1\) & 52.8716 & \(-8.0167\) & 33.8260 \\
+\hline
+\end{tabularx}
+\par\smallskip
+\begin{minipage}{\linewidth}
+\small 注：末期指最湿位置含水率由 \(0.27\) 降至 \(0.15~\mathrm{kg/kg}\) 的区间；总时长变化为相对基准的变化百分比。
+\end{minipage}
+\end{table}
 
-从图中可以看到，中心含水率与全域最大值在误差范围内一致，临界事件附近由中心控制。表面先达标，中心最后达标，因此用体积平均含水率会低估烘干时间。
+在同幅度扰动下，总时长对扩散系数的响应明显更大。减小、增大 \(h_m\) 时，末期耗时仅增加约 \(52.24~\mathrm s\)、减少约 \(35.07~\mathrm s\)；对 \(D\) 作相同扰动，末期耗时则增加约 \(4.12~\mathrm h\)、减少约 \(3.37~\mathrm h\)。可见，表面传质的改变主要影响进入末期以前的过程，内部扩散的改变则仍显著影响末期所需时间。
 
-\subsubsection{时空场与较湿区域演化}
-
-图~\ref{fig:q3field} 给出含水率时空云图，叠加 \(0.15\) 等值线和少量代表剖面，并给出后期低值局部视图。该图用于展示较湿区域如何演化。
-
-\begin{figure}[H]
-\centering
-% \includegraphics[width=0.85\textwidth]{fig_q3_field.png}
-\caption{含水率时空场与较湿区域演化。等值线为 \(0.15~\mathrm{kg/kg}\)，右侧为后期局部放大。}
-\label{fig:q3field}
-\end{figure}
-
-定义较湿区域集合
+为比较单位相对扰动引起的响应，以 \(Y\) 表示总时长 \(t_*\) 或末期耗时 \(t_{\mathrm{late}}\)，用中心差分估计无量纲灵敏度：
 \begin{equation}
-W(t)=\{r\in[0,R]:C(r,t)>C_{\mathrm{crit}}\},
+S_p^{(Y)}\approx\frac{Y(1.1p)-Y(0.9p)}{0.2Y(p)},
+\qquad p\in\{h_m,\gamma_D\}.
+\label{eq:q3-sensitivity}
 \end{equation}
-湿芯半径与体积占比分别为
-\begin{equation}
-R_{\mathrm{wet}}(t)=\max W(t),\qquad
-f_{\mathrm{wet}}(t)=\frac{2}{R^2}\int_0^R\mathbf{1}_{C(r,t)>C_{\mathrm{crit}}}\,r\,\mathrm{d}r.
-\end{equation}
-这些量是阈值轮廓指标，不是真实锐利相变前沿。
+这里 \(p\) 取基准值，其余参数保持不变，负号表示参数增大使时间缩短。\(h_m\) 与 \(\gamma_D\) 对总时长的灵敏度分别为 \(-0.1142\)、\(-0.8931\)，对末期耗时则分别为 \(-0.00326\)、\(-1.0069\)。后者表明，在所考察区间内，末期时间对扩散倍率呈接近反比例的响应，而对表面传质系数的响应很弱。因此，在本模型及本次扰动范围内，长期末段主要受内部扩散限制，单纯提高表面传质系数对这一阶段的缩时作用较小。
 
-\subsubsection{后期干燥机制}
+我们将各组相对 S60 的总时长变化 \(\Delta t_*\) 和末期耗时变化 \(\Delta t_{\mathrm{late}}\) 一并绘于图~\ref{fig:q3-scenarios}。平台取法单独比较；环境水平及传质参数则同时展示两个时间指标，以区分影响主要累积在哪个阶段。
 
-后期温度接近平台时，含水率降低会使经验式中的扩散因子减小，可能延长后期迁移时间。实际干燥速度还取决于径向梯度和表面驱动力，因此不能仅凭 \(D\) 下降就断言哪一种因素主导。
-
-图~\ref{fig:q3mech} 给出 \(D\)、径向梯度、表面驱动力及平均含水率下降率在同一时间轴上的对比。该图用于解释后期是否变慢。
-
+% 环境数据：问题三/outputs/q3/validation/环境情景比较.csv；
+% 环境 t_95 由对应未舍入全场历程插值提取。
+% 传质参数数据：问题三/长期传质灵敏度/runs/summary.csv。
 \begin{figure}[H]
 \centering
-% \includegraphics[width=0.85\textwidth]{fig_q3_mech.png}
-\caption{后期干燥机制。\(D\)、径向梯度、表面驱动力与平均含水率下降率对比。}
-\label{fig:q3mech}
+\qoneplaceholder{5.8cm}{左：S0、S30、S90 相对 S60 的总时长变化（min），以零线为基准\\[0.8em]
+右：按温度、环境含水率、\(h_m\)、\(D\) 整体倍率分组展示正、负扰动\\[0.5em]
+横轴用时间变化（h），实心、空心点分别表示 \(\Delta t_*\)、\(\Delta t_{\mathrm{late}}\)\\[0.5em]
+标明扰动幅度：\(\pm1~^\circ\mathrm C\)、\(\pm0.005~\mathrm{kg/kg}\)、\(\pm10\%\)、\(\pm10\%\)\\[0.5em]
+同一情景的两个点相连；连接线表示两个时间指标的比较，不表示置信区间}
+\caption{环境与传质参数变化对总时长和末期耗时的影响}
+\label{fig:q3-scenarios}
 \end{figure}
 
-\subsubsection{结果小结}
-
-问题三结果呈现三个特征：第一，全域最大含水率首次下降至 \(0.15~\mathrm{kg/kg}\) 的时间即烘干结束时间；第二，中心与全域最大值在误差范围内一致，事件附近由中心控制，但正式判据仍使用全域最大值；第三，后期干燥速率受扩散系数下降影响明显，接近阈值时干燥速度变慢。
-
-\subsection{灵敏度与稳健性分析}
-
-\subsubsection{参数灵敏度：Tornado 图}
-
-为识别对烘干时间影响最大的工艺参数，本文分别扰动初始含水率 \(C_0\)、烘房温度水平 \(T_\infty^*\)、传质系数 \(h_m\)，从同一初态重新计算，记录烘干时间变化。扰动幅度取 \(\pm10\%\)，作为人为情景，不是测量误差或置信区间。
-
-图~\ref{fig:q3tornado} 给出烘干时间的 tornado 图，横轴为烘干时间变化，每根横条对应一个参数，按影响大小排序。
-
-\begin{figure}[H]
-\centering
-% \includegraphics[width=0.85\textwidth]{fig_q3_tornado.png}
-\caption{烘干时间的参数灵敏度 Tornado 图。横轴为烘干时间变化，每根横条对应一个参数。}
-\label{fig:q3tornado}
-\end{figure}
-
-结果表明，传质系数 \(h_m\) 对烘干时间影响最大，其次为烘房温度水平，初始含水率影响相对最小。这说明工艺调节应优先控制表面传质能力，其次控制烘房温度。
-
-\subsubsection{环境情景}
-
-环境检验分两层：S0、S30、S60、S90 比较平台代表值的取法；长期温度和水分偏移比较未来边界水平的假设。图~\ref{fig:q3env} 给出窗口组与长期偏移组分开的烘干时间或相对 S60 的变化。
-
-\begin{figure}[H]
-\centering
-% \includegraphics[width=0.85\textwidth]{fig_q3_env.png}
-\caption{环境情景对烘干时间的影响。窗口组与长期偏移组分开。}
-\label{fig:q3env}
-\end{figure}
-
-S30、S60、S90 均值差很小，只能支持窗口选择较稳定，不能据此声称未来环境不确定性很小。长期温度偏移 \(\pm1~^\circ\mathrm{C}\)、水分偏移 \(\pm0.005~\mathrm{kg/kg}\) 作为人为情景，正式报告分别给出基准事件时间与数值误差估计、窗口对照的时间范围、长期偏移情景的时间范围。
-
-\subsubsection{网格无关性检验}
-
-第二问重点比较 \(T\)、\(C\) 场；第三问最终答案是时间，所以网格加密必须直接比较 \(t_{\mathrm{dry}}\)。本文分别取 \(N=320\)、\(640\)、\(1280\)，记录事件时间、控制位置、表~\ref{tab:q3C} 及事件附近剖面。图~\ref{fig:q3grid} 给出不同网格下烘干时间趋于同一值的折线。
-
-\begin{figure}[H]
-\centering
-% \includegraphics[width=0.85\textwidth]{fig_q3_grid.png}
-\caption{网格无关性检验。不同网格密度下烘干时间趋于同一值。}
-\label{fig:q3grid}
-\end{figure}
-
-网格加密时，相邻网格的烘干时间差稳定下降，观测收敛阶与理论预期相符。正式网格由时间误差估计、表~\ref{tab:q3C} 稳定性和全域最大值检查共同决定。
-
-\subsubsection{步长无关性检验}
-
-固定足够细的网格和同一环境，比较候选长时容差与更严格容差，再改变最大步长。候选最大步长为 \(600\)、\(300\)、\(150~\mathrm{s}\)。图~\ref{fig:q3step} 给出不同步长下烘干时间趋于同一值的折线。
-
-\begin{figure}[H]
-\centering
-% \includegraphics[width=0.85\textwidth]{fig_q3_step.png}
-\caption{步长无关性检验。不同最大步长下烘干时间趋于同一值。}
-\label{fig:q3step}
-\end{figure}
-
-记录实际接受步长、根时间、函数调用数。若求解器本来总在 \(150~\mathrm{s}\) 以下，三个 max\_step 结果相同并不构成独立的时间收敛证据。BDF 与 Radau 交叉一致只能说明时间积分交叉一致，不能替代网格验证。
-
-\subsubsection{误差预算}
-
-预先确定时间误差目标：
-\begin{equation}
-\hat{\epsilon}_{\mathrm{num}}=\hat{\epsilon}_{\mathrm{space}}+\hat{\epsilon}_{\mathrm{time}}+\hat{\epsilon}_{\mathrm{root}}+\hat{\epsilon}_{\mathrm{other}}.
-\end{equation}
-各项统一以秒记录，表示所研究数值误差来源的估计预算。可先以 \(60~\mathrm{s}\) 作为总数值误差估计的候选目标；空间估计优先控制在 \(30~\mathrm{s}\) 以内，时间加严差优先控制在 \(6~\mathrm{s}\) 以内，根定位区间优先控制在 \(0.6~\mathrm{s}\) 以内。这是实施起点，不是题目规定或理论保证。
-
-\subsubsection{模型适用边界}
-
-数值精度、参数敏感性、物理适用性是三件事。前两件已作计算；物性经验式、环境水分驱动关系和一维近似能否准确描述真实实验，仍需实测数据判断。程序未加入收缩、轴向传热、蒸发潜热等新机制，这些属于模型适用范围讨论，不能声称已经研究。尺寸收缩按题目留给问题四；本问结果应称为固定尺寸有效模型下的预测。
-
+补充实验的未扰动组复现了正式基准结果。五组计算中，含水率体积积分的最大相对平衡残差为 \(1.67\times10^{-10}\)，进入末期与全域达标的两处事件均通过前后检查。各扰动组沿用640格配置，本次未另作空间离散或网格加密复核。
 
 \section{问题四的建立与求解}
 
