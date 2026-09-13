@@ -365,7 +365,7 @@ G_{i+1/2}=-S_{i+1/2}\frac{\Psi(C_{i+1})-\Psi(C_i)}{r_{i+1}-r_i}.
 % 左侧为可编辑正文；右侧仅预留算法流程图，不在此绘图。
 \begin{figure}[H]
 \centering
-\begin{minipage}[t]{0.55\linewidth}
+\begin{minipage}[t]{0.48\linewidth}
 \vspace{0pt}
 \small
 \setlength{\parindent}{2em}
@@ -375,31 +375,30 @@ G_{i+1/2}=-S_{i+1/2}\frac{\Psi(C_{i+1})-\Psi(C_i)}{r_{i+1}-r_i}.
 \hrule height 0.4pt
 \vspace{5pt}
 
-\textbf{\textit{STEP1} 读入数据并初始化：}
-读取物性参数和前 \(1800~\mathrm{s}\) 的环境记录，线性插值得到边界输入。按式~\eqref{eq:q1-mesh} 生成网格，计算各层体积与界面面积；初温换算为 K 后，与初始含水率分别赋给各节点，从首个 \(60~\mathrm{s}\) 区间开始计算。
+\textbf{\textit{STEP1} 读入数据并构造网格：}
+读取参数及前 \(1800~\mathrm s\) 的环境记录，线性插值边界数据。构造表面加密网格，计算环层体积与界面面积，设定初态。
 
-\textbf{\textit{STEP2} 试算下一时刻状态：}
-由已有状态预测下一时刻的节点值，按式~\eqref{eq:q1-interface-flux} 及边界条件计算通量，代入式~\eqref{eq:q1-fvm}。用 BDF 离散时间导数，再以 Newton 迭代修正节点值；水分通量随迭代中的含水率更新。
+\textbf{\textit{STEP2} 预测并迭代修正状态：}
+以 \(y\) 表示温度或含水率节点向量，\(m\) 为迭代编号。先预测下一时刻状态，再按试探值计算通量、组装 BDF 隐式方程。通过稀疏线性求解得到 Newton 修正量 \(\Delta y\)，反复更新状态直至收敛。
 
-\textbf{\textit{STEP3} 检查误差并调整步长：}
-迭代收敛后，按给定容差检查局部误差。通过则接受本步，更新时间和状态；超限则减小步长，返回 \textit{STEP2}。若迭代不收敛，先更新雅可比矩阵重试，必要时缩短步长。
+\textbf{\textit{STEP3} 检查误差并接受时间步：}
+收敛后检查局部误差。超限则缩小步长，返回 \textit{STEP2} 重算；满足容差则接受本步，更新时间与状态。
 
-\textbf{\textit{STEP4} 衔接下一环境区间：}
-尚未到达当前区间末端时，按误差估计调整步长，返回 \textit{STEP2}。到达末端后，保存该段解，以末态作为下一段初值继续计算，直至 \(1800~\mathrm{s}\)。按观测时刻分段，使每段积分内的环境输入保持线性。
+\textbf{\textit{STEP4} 继续推进并判断终止：}
+环境区间按 \(60~\mathrm s\) 分段，以上一段末态衔接。未到 \(1800~\mathrm s\) 时返回 \textit{STEP2}，达到终时后转入输出。
 
-\textbf{\textit{STEP5} 提取并输出结果：}
-利用各段的连续输出，在每个整数秒取值，再沿半径线性插值到间隔 \(0.1~\mathrm{cm}\) 的位置。温度转为摄氏温度后，填写题定表格并导出 \texttt{result1.xlsx}。每秒取值仅规定输出间隔，内部积分仍采用自适应步长。
+\textbf{\textit{STEP5} 提取结果并导出：}
+由连续数值解逐秒取值，再插值到间隔 \(0.1~\mathrm{cm}\) 的径向位置。温度转为摄氏度后，填写题定表格并导出 \texttt{result1.xlsx}。内部步长仍由误差控制。
 
 \vspace{5pt}
 \hrule height 0.4pt
 \vspace{2pt}
 \hrule height 0.7pt
 \end{minipage}\hfill
-\begin{minipage}[t]{0.42\linewidth}
+\begin{minipage}[t]{0.48\linewidth}
 \vspace{0pt}
-\qoneplaceholder{9.6cm}{预热阶段计算流程图\\[0.5em]
-与左侧 \textit{STEP1}--\textit{STEP5} 对应\\[0.5em]
-标出误差判断、重算及分段循环}
+\centering
+\includegraphics[width=\linewidth,height=8.45cm]{figure1.pdf}
 \caption{预热阶段温湿分布的计算流程}
 \label{fig:q1-algorithm}
 \end{minipage}
