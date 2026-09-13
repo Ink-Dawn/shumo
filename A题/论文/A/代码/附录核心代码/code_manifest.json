@@ -1,0 +1,50 @@
+{
+  "q1_core.py": {
+    "lines": 101,
+    "sha256": "607a14a6afea1a85c3f5d7e3ec2c1f75008250269a45c1e1146b4cc391b503d9",
+    "ranges": {
+      "Q1_KERNEL": [
+        28,
+        100
+      ]
+    }
+  },
+  "q2_core.py": {
+    "lines": 83,
+    "sha256": "70d4cbbb466ffce778765d5a6759aef7513682bea37f6c2d3702bb41313f1a89",
+    "ranges": {
+      "Q2_KERNEL": [
+        27,
+        82
+      ]
+    }
+  },
+  "q3_core.py": {
+    "lines": 174,
+    "sha256": "6a6eb4d3c6b519f897b480604c4cff09681d2e95f964aad465fe60886b866a2d",
+    "ranges": {
+      "EVENT_KERNEL": [
+        63,
+        146
+      ],
+      "Q3_DRIVER": [
+        151,
+        173
+      ]
+    }
+  },
+  "q4_core.py": {
+    "lines": 198,
+    "sha256": "efe65b3f541836d6784dc79adba6b674e686806084f17d1480ca665012bd2ff0",
+    "ranges": {
+      "EVENT_KERNEL": [
+        22,
+        105
+      ],
+      "Q4_KERNEL": [
+        110,
+        197
+      ]
+    }
+  }
+}

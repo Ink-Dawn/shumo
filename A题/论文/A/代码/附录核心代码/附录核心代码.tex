@@ -1,0 +1,32 @@
+% 在 main.tex 原空代码附录位置使用 \input{代码/附录核心代码/附录核心代码.tex}
+% 主文件需加载 listings、xcolor，并使用 XeLaTeX。
+\providecommand{\AppendixCodeDir}{代码/附录核心代码}
+\begingroup
+\normalsize
+\lstdefinestyle{qcore}{language=Python,
+  basicstyle=\linespread{1}\fontsize{8.5}{10.5}\selectfont\ttfamily,
+  keywordstyle=\bfseries,commentstyle=\color{black!60},
+  stringstyle=\color{black},numbers=left,
+  numberstyle=\fontsize{7}{8}\selectfont\color{black!50},
+  numbersep=6pt,frame=single,framerule=0.3pt,
+  rulecolor=\color{black!30},xleftmargin=1.8em,xrightmargin=0.2em,
+  breaklines=true,breakatwhitespace=false,columns=fullflexible,
+  keepspaces=true,showstringspaces=false,tabsize=4,
+  aboveskip=6pt,belowskip=8pt}
+\section*{附录1：四问核心求解代码}
+\subsection*{问题一：非线性扩散与分段隐式积分}
+\lstinputlisting[style=qcore,firstline=2,lastline=12,firstnumber=2]{\AppendixCodeDir/q1_core.py}
+\lstinputlisting[style=qcore,firstline=28,lastline=100,firstnumber=28]{\AppendixCodeDir/q1_core.py}
+
+\subsection*{问题二：状态依赖物性下的热湿耦合}
+\lstinputlisting[style=qcore,firstline=27,lastline=82,firstnumber=27]{\AppendixCodeDir/q2_core.py}
+
+\subsection*{问题三：长期环境延拓与首次达标事件}
+\lstinputlisting[style=qcore,firstline=63,lastline=146,firstnumber=63]{\AppendixCodeDir/q3_core.py}
+\newpage
+\lstinputlisting[style=qcore,firstline=151,lastline=173,firstnumber=151]{\AppendixCodeDir/q3_core.py}
+
+\subsection*{问题四：材料坐标下的收缩模型}
+\lstinputlisting[style=qcore,firstline=110,lastline=197,firstnumber=110]{\AppendixCodeDir/q4_core.py}
+
+\endgroup
