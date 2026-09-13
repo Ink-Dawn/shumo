@@ -1,0 +1,78 @@
+{
+  "figure": 6,
+  "size_cm": [
+    14.66,
+    7.3
+  ],
+  "time_h": 3,
+  "baseline": [
+    1.766177129814913,
+    1.00812312689945,
+    1.3825270307024615
+  ],
+  "frozen": [
+    2.164242408311943,
+    0.8654934804080419,
+    1.498522428422938
+  ],
+  "frozen_relative_changes_pct": [
+    22.538242160272205,
+    -14.148038338340186,
+    8.390099805971918
+  ],
+  "boundary_scenarios": [
+    {
+      "parameter": "h",
+      "factor": 0.9,
+      "delta_center_pct": 0.2573256671735802,
+      "delta_surface_pct": 0.07547769579674402,
+      "delta_mean_pct": 0.16042718215516505,
+      "center_kg_kg": 1.7707219568976764,
+      "surface_kg_kg": 1.0088840350064276,
+      "mean_kg_kg": 1.3847449798603508
+    },
+    {
+      "parameter": "h",
+      "factor": 1.1,
+      "delta_center_pct": -0.2049296520469368,
+      "delta_surface_pct": -0.07168535071589988,
+      "delta_mean_pct": -0.13218863470813025,
+      "center_kg_kg": 1.7625577091682507,
+      "surface_kg_kg": 1.007400450300284,
+      "mean_kg_kg": 1.3806994870961051
+    },
+    {
+      "parameter": "hm",
+      "factor": 0.9,
+      "delta_center_pct": 2.4602162345930934,
+      "delta_surface_pct": 7.901622569836753,
+      "delta_mean_pct": 4.4292838103353604,
+      "center_kg_kg": 1.8096289062942896,
+      "surface_kg_kg": 1.0877812114262808,
+      "mean_kg_kg": 1.4437630766468759
+    },
+    {
+      "parameter": "hm",
+      "factor": 1.1,
+      "delta_center_pct": -2.2088286308468263,
+      "delta_surface_pct": -7.041175404953859,
+      "delta_mean_pct": -3.942255413007134,
+      "center_kg_kg": 1.7271653037000925,
+      "surface_kg_kg": 0.9371394092365541,
+      "mean_kg_kg": 1.328024283998307
+    }
+  ],
+  "axes_definition": "100*(scenario-baseline)/baseline; x=center, y=surface; baseline values specific to each location",
+  "arrows": "changes in output states relative to baseline, NOT time trajectories",
+  "left_frozen_scope": "all thermal storage/conductivity and diffusion coefficients frozen at initial properties",
+  "main_panels_have_different_limits": true,
+  "zoom_units": "percent on both axes, h cases only",
+  "interpretation_limit": "No physical validation or attribution to D alone; mean change is a separate scalar, not the norm of the vector",
+  "input_hashes": {
+    "outputs\\q2\\analysis\\basic_metrics.csv": "5daa341eb59e7620337c948e8fa3c660407c9bee67fa68a07fd5381ade709d66",
+    "outputs\\q2\\analysis\\boundary_sensitivity.csv": "0d2bd3e66fcf8ea6ed53b8d14b3e16b369e0c9e67691f8d98f77dd2a1e8aa49c",
+    "outputs\\q2\\validation\\cases\\2ef06efbd4f98cfa.npz": "314cb454b29474ddb85ae664933b681d3ae07a00fd2c450fb5347143d3e0818f"
+  },
+  "no_model_rerun": true,
+  "randomness": null
+}
