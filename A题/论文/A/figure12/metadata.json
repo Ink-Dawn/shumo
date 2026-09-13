@@ -54,5 +54,14 @@
       0.21424010367661292,
       0.3570668394610215
     ]
-  }
+  },
+  "panels": [
+    "G, Q, GQ versus time",
+    "G-Q trajectory"
+  ],
+  "crossing_time_h_linear_interpolation": 11.163196260257576,
+  "figure_size_cm": [
+    18,
+    8.8
+  ]
 }

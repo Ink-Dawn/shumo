@@ -1,0 +1,108 @@
+{
+  "status": "passed",
+  "scope": "Pre-push compilation of latest manuscript and repaired figures; source, referenced assets and PDF bound by SHA-256.",
+  "built_at": "2026-09-13T17:46:12.753539+08:00",
+  "engine": "XeLaTeX (MiKTeX 25.12)",
+  "command": "D:/LaTeX/MiKTeX/miktex/bin/x64/xelatex.exe --disable-installer -interaction=nonstopmode -halt-on-error -file-line-error -no-shell-escape main.tex",
+  "pages": 36,
+  "pages_before": 36,
+  "warnings": [],
+  "source_sha256": "c682a479855781d8eb4d61e0442810ae4c9971a4e2cf77bff3991c71dad0e722",
+  "pdf_sha256": "eb13f543c7697685e1dc377f27a6483eb6c3059c2883ba874a3bcff9e96345a4",
+  "asset_sha256": {
+    "main.tex": "c682a479855781d8eb4d61e0442810ae4c9971a4e2cf77bff3991c71dad0e722",
+    ".latexmkrc": "ad39e07c28444447e0a10af28c8170948f52893d20bcf611eab062c7fed15ccb",
+    "代码/附录核心代码/附录核心代码.tex": "b9ae889bb63bea82595322e1e6e2898e09389ce729002ececd1a9fe54437f1cd",
+    "代码/附录核心代码/q1_core.py": "607a14a6afea1a85c3f5d7e3ec2c1f75008250269a45c1e1146b4cc391b503d9",
+    "代码/附录核心代码/q2_core.py": "70d4cbbb466ffce778765d5a6759aef7513682bea37f6c2d3702bb41313f1a89",
+    "代码/附录核心代码/q3_core.py": "6a6eb4d3c6b519f897b480604c4cff09681d2e95f964aad465fe60886b866a2d",
+    "代码/附录核心代码/q4_core.py": "efe65b3f541836d6784dc79adba6b674e686806084f17d1480ca665012bd2ff0",
+    "figure0.pdf": "016891c83b820c2ccd32052a8b22c856e541bb204546795916a0ae6709baad53",
+    "figure2.pdf": "cb72001f78a5cc26c27f2ecdfeb3597e851d18b8ef0f998d72ffaafe40d32d8d",
+    "figure1.pdf": "ef268acee1109ba4437139034d497cf8e54aad35d9a26c9abba2f59231967598",
+    "figure3.pdf": "21e7b8766dcb0f0d29b2b5cee22e966da3d865f7f8d0a009146c375d92a8681a",
+    "figure_q1_validation.pdf": "54c4e467c31948437acfee64171f77b9db209f31509bb4ee53e24f478c63d5d3",
+    "figure5.pdf": "2b5da02d8cc47ff2c3054c48b97f80f11d8440e92487c0b17bcc610301fd6c7d",
+    "figure6.pdf": "398dfb93020968b68fb670f4dbe3dc9be15109ca26946b26432cd760ac11dc3f",
+    "figure7.pdf": "36c115274eea60b74f8bd0b3ba7477ca63d8e8de561b755932b7b0a6d661dea4",
+    "figure8.pdf": "2ff63d3695ec0694fb4bd1b1f5124d7d841494a67154ede46c7ee165ec0c7fc7",
+    "figure_q3_validation.pdf": "588dd33f67e4978baadc37e6c7c33f4ddd18539f2badced8e91d87de39eed1ba",
+    "figure9.pdf": "035fecc9e376a50899101b83cd1d3d4bc3eed0c028f210894471a433036df43b",
+    "figure10.pdf": "68cf7cc70a5d45345354d890e435f77c9ab53de653ef263d573957b43b8bb71f",
+    "figure11.pdf": "99488de310f3b4ed10ba6f7a9c864b7cb58e1e8235491eea8e4e3b9d21da7fdf",
+    "figure12.pdf": "5247022c6f77c8d518681cf1fc121a2a6293c1ac7ac7d674b4d8dbfff08d21b5"
+  },
+  "validation": {
+    "equation_environments_unchanged": true,
+    "all_ten_tabularx_bodies_unchanged": true,
+    "symbol_table_body_unchanged_caption_added": true,
+    "table_numbers": [
+      1,
+      2,
+      3
+    ],
+    "all_bibliography_entries_cited_in_first_appearance_order": true,
+    "figure2_only_two_unit_labels_changed": true,
+    "figure2_other_text_vector_paths_images_preserved": true,
+    "visual_review_pages": [
+      4,
+      7,
+      10,
+      19,
+      20
+    ],
+    "full_PDE_recalculation": false
+  },
+  "backup_directory": "build/flowchart-font-fix/before",
+  "diff": "build/review-fixes-20260913/main.diff",
+  "removed_uncited_bibliography": [
+    "zhang2020",
+    "zhang2024yam",
+    "zhu2021"
+  ],
+  "citation_sources": {
+    "wang2024": "https://nygcxb.ijournals.cn/nygcxb/article/abstract/20240201",
+    "tzempelikos2015": "https://www.sciencedirect.com/science/article/pii/S0260877415000357",
+    "wu2022": "https://www.j-csam.org/jcsam/article/issue/2022_53_s2"
+  },
+  "visual_review": "Latest abstract page rendered and inspected; all required figure and appendix inputs present; 36-page compilation passed.",
+  "abstract_chinese_characters": {
+    "original": 1000,
+    "final": 1011
+  },
+  "references": {
+    "count": 7,
+    "missing": [],
+    "uncited": []
+  },
+  "font_repair": {
+    "figures": [
+      "figure0.pdf",
+      "figure1.pdf",
+      "figure2.pdf",
+      "figure7.pdf"
+    ],
+    "corrected_unicode_mappings": 25,
+    "remaining_isolated_math_surrogates": 0,
+    "figure_renderers": [
+      "MuPDF",
+      "PDFium 153.0.7999.0"
+    ],
+    "figure_renders_pixel_identical_before_after": true,
+    "entire_pdf_render_differences_at_72dpi": [
+      {
+        "page": 7,
+        "pixels": 12,
+        "bbox": [
+          89,
+          611,
+          505,
+          611
+        ]
+      }
+    ],
+    "render_difference_review": "Only isolated anti-aliasing pixels at the bottom rule of table 2; magnified comparison shows identical geometry and contents.",
+    "reader_note": "Original also renders correctly in these current engines; invalid mappings confirmed structurally. User screenshot concerns a different browser/viewer configuration.",
+    "details": "build/flowchart-font-fix/font-repair.json"
+  }
+}
